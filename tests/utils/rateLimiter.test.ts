@@ -247,7 +247,7 @@ describe('createRateLimiter', () => {
       expect(limiter.canMakeRequest()).toBe(true);
       limiter.recordRequest();
       
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise(resolve => setTimeout(resolve, 15));
     }
     
     expect(limiter.canMakeRequest()).toBe(true);

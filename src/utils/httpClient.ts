@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 import { RateLimiter } from './rateLimiter';
+import { Either, left, right } from '../types/either';
 
 export interface HttpClientConfig {
   baseURL: string;
@@ -81,12 +82,12 @@ export class HttpClient {
   /**
    * Make a GET request
    */
-  async get<T>(url: string, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
+  async get<T>(url: string, config?: AxiosRequestConfig): Promise<Either<ApiError, ApiResponse<T>>> {
     try {
       const response = await this.client.get<T>(url, config);
-      return this.formatResponse(response);
+      return right(this.formatResponse(response));
     } catch (error) {
-      throw this.formatError(error as AxiosError);
+      return left(this.formatError(error as AxiosError));
     }
   }
 
@@ -98,33 +99,35 @@ export class HttpClient {
   async requestWithRetry<T>(
     url: string,
     config?: AxiosRequestConfig
-  ): Promise<ApiResponse<T>> {
+  ): Promise<Either<ApiError, ApiResponse<T>>> {
     let lastError: ApiError;
     const maxRetries = this.config.retries || 3;
     const retryDelay = this.config.retryDelay || 1000;
 
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
-      try {
-        return await this.get<T>(url, config);
-      } catch (error) {
-        lastError = error as ApiError;
-        
-        // Don't retry on client errors (4xx) except rate limiting
-        if ((error as ApiError).status >= 400 && (error as ApiError).status < 500 && (error as ApiError).status !== 429) {
-          throw error;
-        }
-
-        // Don't retry on the last attempt
-        if (attempt === maxRetries) {
-          break;
-        }
-
-        // Wait before retrying
-        await new Promise(resolve => setTimeout(resolve, retryDelay * Math.pow(2, attempt)));
+      const result = await this.get<T>(url, config);
+      
+      if (result.isRight()) {
+        return result;
       }
+      
+      lastError = result.value;
+      
+      // Don't retry on client errors (4xx) except rate limiting
+      if (lastError.status >= 400 && lastError.status < 500 && lastError.status !== 429) {
+        return result;
+      }
+
+      // Don't retry on the last attempt
+      if (attempt === maxRetries) {
+        break;
+      }
+
+      // Wait before retrying
+      await new Promise(resolve => setTimeout(resolve, retryDelay * Math.pow(2, attempt)));
     }
 
-    throw lastError!;
+    return left(lastError!);
   }
 
   /**

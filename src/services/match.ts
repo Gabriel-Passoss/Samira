@@ -2,6 +2,8 @@ import { HttpClient } from '../utils/httpClient';
 import { MatchSchema } from '../types';
 import { ENDPOINTS } from '../constants';
 import type { Match } from '../types';
+import { Either, left, right } from '../types/either';
+import { ApiError } from '../utils/httpClient';
 
 export interface MatchHistoryOptions {
   start?: number;
@@ -30,17 +32,31 @@ export class MatchService {
   /**
    * Get match by match ID
    */
-  async getMatchById(matchId: string): Promise<Match> {
+  async getMatchById(matchId: string): Promise<Either<ApiError, Match>> {
     const url = ENDPOINTS.MATCH_BY_ID.replace('{matchId}', matchId);
     const response = await this.client.get<Match>(url);
     
-    return MatchSchema.parse(response.data);
+    if (response.isLeft()) {
+      return left(response.value);
+    }
+    
+    try {
+      const match = MatchSchema.parse(response.value.data);
+      return right(match);
+    } catch (error) {
+      return left({
+        status: 400,
+        statusText: 'Validation Error',
+        message: 'Match data validation failed',
+        details: error
+      });
+    }
   }
 
   /**
    * Get match history by PUUID
    */
-  async getMatchHistoryByPUUID(puuid: string, options?: MatchHistoryOptions): Promise<string[]> {
+  async getMatchHistoryByPUUID(puuid: string, options?: MatchHistoryOptions): Promise<Either<ApiError, string[]>> {
     const params = new URLSearchParams();
     
     if (options?.start !== undefined) {
@@ -70,33 +86,33 @@ export class MatchService {
     const url = `${ENDPOINTS.MATCHES_BY_PUUID.replace('{puuid}', puuid)}${params.toString() ? `?${params.toString()}` : ''}`;
     const response = await this.client.get<string[]>(url);
     
-    return response.data;
+    if (response.isLeft()) {
+      return left(response.value);
+    }
+    
+    return right(response.value.data);
   }
 
   /**
    * Get multiple matches by IDs
    */
-  async getMatchesByIds(matchIds: string[]): Promise<Match[]> {
+  async getMatchesByIds(matchIds: string[]): Promise<Either<ApiError, Match[]>> {
     const matches: Match[] = [];
     const errors: Array<{ id: string; error: any }> = [];
     
     // Process in parallel with rate limiting handled by the HTTP client
     const promises = matchIds.map(async (id) => {
-      try {
-        const match = await this.getMatchById(id);
-        return match;
-      } catch (error) {
-        errors.push({ id, error });
-        return null;
-      }
+      return await this.getMatchById(id);
     });
     
     const results = await Promise.all(promises);
     
-    // Filter out failed requests
+    // Filter out failed requests and extract successful matches
     results.forEach((result) => {
-      if (result) {
-        matches.push(result);
+      if (result.isRight()) {
+        matches.push(result.value);
+      } else {
+        errors.push({ id: 'unknown', error: result.value });
       }
     });
     
@@ -105,46 +121,61 @@ export class MatchService {
       console.warn(`Failed to fetch ${errors.length} matches:`, errors);
     }
     
-    return matches;
+    return right(matches);
   }
 
   /**
    * Get recent matches for a summoner
    */
-  async getRecentMatches(puuid: string, count: number = 20): Promise<Match[]> {
+  async getRecentMatches(puuid: string, count: number = 20): Promise<Either<ApiError, Match[]>> {
     const matchIds = await this.getMatchHistoryByPUUID(puuid, { count });
-    return await this.getMatchesByIds(matchIds);
+    if (matchIds.isLeft()) {
+      return left(matchIds.value);
+    }
+    return await this.getMatchesByIds(matchIds.value);
   }
 
   /**
    * Get matches within a time range
    */
-  async getMatchesInTimeRange(puuid: string, startTime: number, endTime: number): Promise<Match[]> {
+  async getMatchesInTimeRange(puuid: string, startTime: number, endTime: number): Promise<Either<ApiError, Match[]>> {
     const matchIds = await this.getMatchHistoryByPUUID(puuid, { startTime, endTime });
-    return await this.getMatchesByIds(matchIds);
+    if (matchIds.isLeft()) {
+      return left(matchIds.value);
+    }
+    return await this.getMatchesByIds(matchIds.value);
   }
 
   /**
    * Get matches by queue type
    */
-  async getMatchesByQueue(puuid: string, queueId: number): Promise<Match[]> {
+  async getMatchesByQueue(puuid: string, queueId: number): Promise<Either<ApiError, Match[]>> {
     const matchIds = await this.getMatchHistoryByPUUID(puuid, { queue: queueId });
-    return await this.getMatchesByIds(matchIds);
+    if (matchIds.isLeft()) {
+      return left(matchIds.value);
+    }
+    return await this.getMatchesByIds(matchIds.value);
   }
 
   /**
    * Get match duration in minutes
    */
-  async getMatchDuration(matchId: string): Promise<number> {
+  async getMatchDuration(matchId: string): Promise<Either<ApiError, number>> {
     const match = await this.getMatchById(matchId);
-    return Math.floor(match.info.gameDuration / 60);
+    if (match.isLeft()) {
+      return left(match.value);
+    }
+    return right(Math.floor(match.value.info.gameDuration / 60));
   }
 
   /**
    * Get match creation date
    */
-  async getMatchCreationDate(matchId: string): Promise<Date> {
+  async getMatchCreationDate(matchId: string): Promise<Either<ApiError, Date>> {
     const match = await this.getMatchById(matchId);
-    return new Date(match.info.gameCreation);
+    if (match.isLeft()) {
+      return left(match.value);
+    }
+    return right(new Date(match.value.info.gameCreation));
   }
 }
