@@ -90,49 +90,13 @@ export class HttpClient {
     }
   }
 
-  /**
-   * Make a POST request
-   */
-  async post<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
-    try {
-      const response = await this.client.post<T>(url, data, config);
-      return this.formatResponse(response);
-    } catch (error) {
-      throw this.formatError(error as AxiosError);
-    }
-  }
+
 
   /**
-   * Make a PUT request
-   */
-  async put<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
-    try {
-      const response = await this.client.put<T>(url, data, config);
-      return this.formatResponse(response);
-    } catch (error) {
-      throw this.formatError(error as AxiosError);
-    }
-  }
-
-  /**
-   * Make a DELETE request
-   */
-  async delete<T>(url: string, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
-    try {
-      const response = await this.client.delete<T>(url, config);
-      return this.formatResponse(response);
-    } catch (error) {
-      throw this.formatError(error as AxiosError);
-    }
-  }
-
-  /**
-   * Make a request with retry logic
+   * Make a GET request with retry logic
    */
   async requestWithRetry<T>(
-    method: 'GET' | 'POST' | 'PUT' | 'DELETE',
     url: string,
-    data?: any,
     config?: AxiosRequestConfig
   ): Promise<ApiResponse<T>> {
     let lastError: ApiError;
@@ -141,18 +105,7 @@ export class HttpClient {
 
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
-        switch (method) {
-          case 'GET':
-            return await this.get<T>(url, config);
-          case 'POST':
-            return await this.post<T>(url, data, config);
-          case 'PUT':
-            return await this.put<T>(url, data, config);
-          case 'DELETE':
-            return await this.delete<T>(url, config);
-          default:
-            throw new Error(`Unsupported HTTP method: ${method}`);
-        }
+        return await this.get<T>(url, config);
       } catch (error) {
         lastError = error as ApiError;
         
