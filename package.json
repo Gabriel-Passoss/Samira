@@ -1,0 +1,40 @@
+{
+  "name": "samira",
+  "version": "1.0.0",
+  "description": "A TypeScript library for League of Legends API calls",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node src/index.ts",
+    "clean": "rm -rf dist",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "keywords": [
+    "league-of-legends",
+    "lol",
+    "api",
+    "typescript",
+    "zod"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "zod": "^3.22.4",
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.8.0",
+    "typescript": "^5.2.2",
+    "ts-node": "^10.9.1",
+    "vitest": "^1.0.0",
+    "@vitest/ui": "^1.0.0",
+    "dotenv": "^16.3.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -1,0 +1,297 @@
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
+import { RateLimiter } from './rateLimiter';
+
+export interface HttpClientConfig {
+  baseURL: string;
+  apiKey: string;
+  timeout?: number;
+  retries?: number;
+  retryDelay?: number;
+}
+
+export interface ApiResponse<T> {
+  data: T;
+  status: number;
+  statusText: string;
+  headers: Record<string, string>;
+}
+
+export interface ApiError {
+  status: number;
+  statusText: string;
+  message: string;
+  details?: any;
+}
+
+export class HttpClient {
+  private client: AxiosInstance;
+  private rateLimiter: RateLimiter;
+  private config: HttpClientConfig;
+
+  constructor(config: HttpClientConfig) {
+    this.config = config;
+    this.rateLimiter = new RateLimiter({
+      requestsPerSecond: 20,
+      requestsPerTwoMinutes: 100,
+    });
+
+    this.client = axios.create({
+      baseURL: config.baseURL,
+      timeout: config.timeout || 10000,
+      headers: {
+        'X-Riot-Token': config.apiKey,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+    });
+
+    // Add request interceptor for rate limiting
+    this.client.interceptors.request.use(
+      async (config) => {
+        await this.rateLimiter.waitForNextRequest();
+        this.rateLimiter.recordRequest();
+        return config;
+      },
+      (error) => {
+        return Promise.reject(error);
+      }
+    );
+
+    // Add response interceptor for error handling
+    this.client.interceptors.response.use(
+      (response: AxiosResponse) => response,
+      async (error: AxiosError) => {
+        if (error.response?.status === 429) {
+          // Rate limit exceeded, wait and retry
+          const retryAfter = error.response.headers['retry-after'];
+          const delay = retryAfter ? parseInt(retryAfter) * 1000 : 1000;
+          await new Promise(resolve => setTimeout(resolve, delay));
+          
+          // Retry the request
+          if (error.config) {
+            return this.client.request(error.config);
+          }
+        }
+        
+        return Promise.reject(this.formatError(error));
+      }
+    );
+  }
+
+  /**
+   * Make a GET request
+   */
+  async get<T>(url: string, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
+    try {
+      const response = await this.client.get<T>(url, config);
+      return this.formatResponse(response);
+    } catch (error) {
+      throw this.formatError(error as AxiosError);
+    }
+  }
+
+  /**
+   * Make a POST request
+   */
+  async post<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
+    try {
+      const response = await this.client.post<T>(url, data, config);
+      return this.formatResponse(response);
+    } catch (error) {
+      throw this.formatError(error as AxiosError);
+    }
+  }
+
+  /**
+   * Make a PUT request
+   */
+  async put<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
+    try {
+      const response = await this.client.put<T>(url, data, config);
+      return this.formatResponse(response);
+    } catch (error) {
+      throw this.formatError(error as AxiosError);
+    }
+  }
+
+  /**
+   * Make a DELETE request
+   */
+  async delete<T>(url: string, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
+    try {
+      const response = await this.client.delete<T>(url, config);
+      return this.formatResponse(response);
+    } catch (error) {
+      throw this.formatError(error as AxiosError);
+    }
+  }
+
+  /**
+   * Make a request with retry logic
+   */
+  async requestWithRetry<T>(
+    method: 'GET' | 'POST' | 'PUT' | 'DELETE',
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig
+  ): Promise<ApiResponse<T>> {
+    let lastError: ApiError;
+    const maxRetries = this.config.retries || 3;
+    const retryDelay = this.config.retryDelay || 1000;
+
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        switch (method) {
+          case 'GET':
+            return await this.get<T>(url, config);
+          case 'POST':
+            return await this.post<T>(url, data, config);
+          case 'PUT':
+            return await this.put<T>(url, data, config);
+          case 'DELETE':
+            return await this.delete<T>(url, config);
+          default:
+            throw new Error(`Unsupported HTTP method: ${method}`);
+        }
+      } catch (error) {
+        lastError = error as ApiError;
+        
+        // Don't retry on client errors (4xx) except rate limiting
+        if ((error as ApiError).status >= 400 && (error as ApiError).status < 500 && (error as ApiError).status !== 429) {
+          throw error;
+        }
+
+        // Don't retry on the last attempt
+        if (attempt === maxRetries) {
+          break;
+        }
+
+        // Wait before retrying
+        await new Promise(resolve => setTimeout(resolve, retryDelay * Math.pow(2, attempt)));
+      }
+    }
+
+    throw lastError!;
+  }
+
+  /**
+   * Update the API key
+   */
+  updateApiKey(apiKey: string): void {
+    this.config.apiKey = apiKey;
+    this.client.defaults.headers['X-Riot-Token'] = apiKey;
+  }
+
+  /**
+   * Update the base URL
+   */
+  updateBaseURL(baseURL: string): void {
+    this.config.baseURL = baseURL;
+    this.client.defaults.baseURL = baseURL;
+  }
+
+  /**
+   * Get rate limiter status
+   */
+  getRateLimitStatus() {
+    return this.rateLimiter.getStatus();
+  }
+
+  /**
+   * Reset rate limiter
+   */
+  resetRateLimiter(): void {
+    this.rateLimiter.reset();
+  }
+
+  /**
+   * Format axios response to our standard format
+   */
+  private formatResponse<T>(response: AxiosResponse<T>): ApiResponse<T> {
+    return {
+      data: response.data,
+      status: response.status,
+      statusText: response.statusText,
+      headers: response.headers as Record<string, string>,
+    };
+  }
+
+  /**
+   * Format axios error to our standard format
+   */
+  private formatError(error: AxiosError): ApiError {
+    if (error.response) {
+      // Server responded with error status
+      return {
+        status: error.response.status,
+        statusText: error.response.statusText,
+        message: this.getErrorMessage(error.response.status),
+        details: error.response.data,
+      };
+    } else if (error.request) {
+      // Request was made but no response received
+      return {
+        status: 0,
+        statusText: 'No Response',
+        message: 'No response received from server',
+        details: error.request,
+      };
+    } else {
+      // Something else happened
+      return {
+        status: 0,
+        statusText: 'Request Error',
+        message: error.message || 'An error occurred while setting up the request',
+        details: error,
+      };
+    }
+  }
+
+  /**
+   * Get user-friendly error messages for common HTTP status codes
+   */
+  private getErrorMessage(status: number): string {
+    switch (status) {
+      case 400:
+        return 'Bad Request - Invalid parameters provided';
+      case 401:
+        return 'Unauthorized - Invalid API key';
+      case 403:
+        return 'Forbidden - API key does not have access to this endpoint';
+      case 404:
+        return 'Not Found - The requested resource was not found';
+      case 429:
+        return 'Too Many Requests - Rate limit exceeded';
+      case 500:
+        return 'Internal Server Error - Riot Games server error';
+      case 502:
+        return 'Bad Gateway - Riot Games server is down';
+      case 503:
+        return 'Service Unavailable - Riot Games service is temporarily unavailable';
+      case 504:
+        return 'Gateway Timeout - Riot Games server timeout';
+      default:
+        return `HTTP Error ${status}`;
+    }
+  }
+}
+
+/**
+ * Create an HTTP client for a specific platform
+ */
+export function createPlatformClient(platform: string, apiKey: string): HttpClient {
+  return new HttpClient({
+    baseURL: `https://${platform}`,
+    apiKey,
+  });
+}
+
+/**
+ * Create an HTTP client for regional routing
+ */
+export function createRegionalClient(region: string, apiKey: string): HttpClient {
+  return new HttpClient({
+    baseURL: `https://${region}.api.riotgames.com`,
+    apiKey,
+  });
+}
