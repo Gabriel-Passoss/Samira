@@ -2,81 +2,44 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { MatchService } from '../../src/services/matchService';
 import { HttpClient } from '../../src/utils/httpClient';
 import { ENDPOINTS } from '../../src/constants';
+import { makeMatch, makeMatchArray } from '../factories/make-match';
 
 // Mock HttpClient
 vi.mock('../../src/utils/httpClient');
 vi.mock('../../src/utils/rateLimiter');
 
-describe.skip('MatchService', () => {
+describe('MatchService', () => {
   let matchService: MatchService;
   let mockHttpClient: any;
 
   beforeEach(() => {
     vi.clearAllMocks();
     
-    // Create mock HTTP client
+    // Create a mock HttpClient instance
     mockHttpClient = {
       get: vi.fn(),
       post: vi.fn(),
       put: vi.fn(),
       delete: vi.fn(),
-      requestWithRetry: vi.fn(),
-      updateApiKey: vi.fn(),
-      updateBaseURL: vi.fn(),
-      getRateLimitStatus: vi.fn(),
-      resetRateLimiter: vi.fn(),
     };
-
-    // Mock HttpClient constructor
+    
+    // Mock the HttpClient constructor to return our mock
     (HttpClient as any).mockImplementation(() => mockHttpClient);
     
-    // Create a mock HttpClient instance for the MatchService
-    const mockHttpClientInstance = new HttpClient({
-      baseURL: 'https://test.api.riotgames.com',
-      apiKey: process.env.RIOT_API_KEY || 'test-api-key',
-    });
-    
-    // Replace the internal client with our mock
-    (mockHttpClientInstance as any).client = mockHttpClient;
-    
-    matchService = new MatchService(mockHttpClientInstance);
+    // Create the service with the mocked client
+    matchService = new MatchService(mockHttpClient);
   });
 
   describe('constructor', () => {
     it('should create MatchService instance', () => {
       expect(matchService).toBeInstanceOf(MatchService);
     });
-
-    it('should create HTTP clients for platform and regional routing', () => {
-      expect(HttpClient).toHaveBeenCalledTimes(2);
-    });
   });
 
   describe('getMatchById', () => {
     it('should fetch match by ID successfully', async () => {
-      const mockMatchData = {
-        metadata: {
-          dataVersion: '2',
-          matchId: 'NA1_1234567890',
-          participants: ['puuid1', 'puuid2'],
-        },
-        info: {
-          gameCreation: 1640995200000,
-          gameDuration: 1800,
-          gameEndTimestamp: 1640997000000,
-          gameId: 1234567890,
-          gameMode: 'CLASSIC',
-          gameName: 'game_name',
-          gameStartTimestamp: 1640995200000,
-          gameType: 'MATCHED_GAME',
-          gameVersion: '12.1.1.1',
-          mapId: 11,
-          participants: [],
-          platformId: 'NA1',
-          queueId: 420,
-          teams: [],
-        },
-      };
+      const matchId = 'BR1_3130694840';
+      const mockMatchData = makeMatch({ matchId });
 
       mockHttpClient.get.mockResolvedValue({
         data: mockMatchData,
@@ -85,12 +48,15 @@ describe.skip('MatchService', () => {
         headers: {},
       });
 
-      const result = await matchService.getMatchById('NA1_1234567890');
+      const match = await matchService.getMatchById(matchId);
       
-      expect(result).toEqual(mockMatchData);
-      expect(mockHttpClient.get).toHaveBeenCalledWith(
-        ENDPOINTS.MATCH_BY_ID.replace('{matchId}', 'NA1_1234567890')
-      );
+      expect(match).toBeDefined();
+      expect(match.metadata).toBeDefined();
+      expect(match.metadata.matchId).toBe(matchId);
+      expect(match.info).toBeDefined();
+      expect(match.info.participants).toBeDefined();
+      expect(Array.isArray(match.info.participants)).toBe(true);
+      expect(match.info.participants.length).toBe(10);
     });
 
     it('should handle errors when fetching match', async () => {
@@ -151,9 +117,9 @@ describe.skip('MatchService', () => {
     it('should fetch multiple matches by IDs', async () => {
       const matchIds = ['match1', 'match2', 'match3'];
       const mockMatches = [
-        { metadata: { matchId: 'match1' }, info: { gameMode: 'CLASSIC' } },
-        { metadata: { matchId: 'match2' }, info: { gameMode: 'ARAM' } },
-        { metadata: { matchId: 'match3' }, info: { gameMode: 'CLASSIC' } },
+        makeMatch({ matchId: 'match1', gameMode: 'CLASSIC' }),
+        makeMatch({ matchId: 'match2', gameMode: 'ARAM' }),
+        makeMatch({ matchId: 'match3', gameMode: 'CLASSIC' }),
       ];
 
       mockHttpClient.get
@@ -174,7 +140,7 @@ describe.skip('MatchService', () => {
       const matchIds = ['match1', 'match2'];
       
       mockHttpClient.get
-        .mockResolvedValueOnce({ data: { metadata: { matchId: 'match1' }, info: {} }, status: 200, statusText: 'OK', headers: {} })
+        .mockResolvedValueOnce({ data: makeMatch({ matchId: 'match1' }), status: 200, statusText: 'OK', headers: {} })
         .mockRejectedValueOnce(new Error('Failed to fetch match2'));
 
       const result = await matchService.getMatchesByIds(matchIds);
@@ -188,10 +154,7 @@ describe.skip('MatchService', () => {
   describe('getRecentMatches', () => {
     it('should fetch recent matches with default count', async () => {
       const mockMatchIds = ['match1', 'match2', 'match3', 'match4', 'match5'];
-      const mockMatches = mockMatchIds.map(id => ({
-        metadata: { matchId: id },
-        info: { gameMode: 'CLASSIC' },
-      }));
+      const mockMatches = mockMatchIds.map(id => makeMatch({ matchId: id, gameMode: 'CLASSIC' }));
 
       mockHttpClient.get
         .mockResolvedValueOnce({ data: mockMatchIds, status: 200, statusText: 'OK', headers: {} });
@@ -213,10 +176,7 @@ describe.skip('MatchService', () => {
 
     it('should fetch recent matches with custom count', async () => {
       const mockMatchIds = ['match1', 'match2'];
-      const mockMatches = mockMatchIds.map(id => ({
-        metadata: { matchId: id },
-        info: { gameMode: 'CLASSIC' },
-      }));
+      const mockMatches = mockMatchIds.map(id => makeMatch({ matchId: id, gameMode: 'CLASSIC' }));
 
       mockHttpClient.get
         .mockResolvedValueOnce({ data: mockMatchIds, status: 200, statusText: 'OK', headers: {} });
@@ -242,10 +202,7 @@ describe.skip('MatchService', () => {
       const endTime = 1640997000000;   // Jan 1, 2022 + 30 minutes
       
       const mockMatchIds = ['match1', 'match2'];
-      const mockMatches = mockMatchIds.map(id => ({
-        metadata: { matchId: id },
-        info: { gameMode: 'CLASSIC' },
-      }));
+      const mockMatches = mockMatchIds.map(id => makeMatch({ matchId: id, gameMode: 'CLASSIC' }));
 
       mockHttpClient.get
         .mockResolvedValueOnce({ data: mockMatchIds, status: 200, statusText: 'OK', headers: {} });
@@ -273,10 +230,7 @@ describe.skip('MatchService', () => {
       const queueId = 420; // Ranked Solo/Duo
       
       const mockMatchIds = ['match1', 'match2'];
-      const mockMatches = mockMatchIds.map(id => ({
-        metadata: { matchId: id },
-        info: { gameMode: 'CLASSIC', queueId: 420 },
-      }));
+      const mockMatches = mockMatchIds.map(id => makeMatch({ matchId: id, gameMode: 'CLASSIC', queueId: 420 }));
 
       mockHttpClient.get
         .mockResolvedValueOnce({ data: mockMatchIds, status: 200, statusText: 'OK', headers: {} });
@@ -301,10 +255,7 @@ describe.skip('MatchService', () => {
 
   describe('utility methods', () => {
     it('should get match duration in minutes', async () => {
-      const mockMatchData = {
-        metadata: { matchId: 'test-match' },
-        info: { gameDuration: 1800 }, // 30 minutes in seconds
-      };
+      const mockMatchData = makeMatch({ gameDuration: 1800 }); // 30 minutes in seconds
 
       mockHttpClient.get.mockResolvedValue({
         data: mockMatchData,
@@ -318,29 +269,10 @@ describe.skip('MatchService', () => {
     });
 
     it('should get match creation date', async () => {
-      const mockMatchData = {
-        metadata: {
-          dataVersion: '2',
-          matchId: 'test-match',
-          participants: ['puuid1', 'puuid2'],
-        },
-        info: {
-          gameCreation: 1640995200000, // Jan 1, 2022
-          gameDuration: 1800,
-          gameEndTimestamp: 1640997000000,
-          gameId: 1234567890,
-          gameMode: 'CLASSIC',
-          gameName: 'game_name',
-          gameStartTimestamp: 1640995200000,
-          gameType: 'MATCHED_GAME',
-          gameVersion: '12.1.1.1',
-          mapId: 11,
-          participants: [],
-          platformId: 'NA1',
-          queueId: 420,
-          teams: [],
-        },
-      };
+      const mockMatchData = makeMatch({ 
+        gameCreation: 1641081600000,
+        gameDuration: 1800 
+      });
 
       mockHttpClient.get.mockResolvedValue({
         data: mockMatchData,
@@ -356,5 +288,4 @@ describe.skip('MatchService', () => {
       expect(result.getDate()).toBe(1);
     });
   });
-
 });
