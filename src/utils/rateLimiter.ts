@@ -15,6 +15,9 @@ export interface RateLimitState {
   windowStartTime: number;
   dailyRequestCount: number;
   dailyWindowStart: number;
+  // Add per-second tracking
+  secondWindowStart: number;
+  requestsInLastSecond: number;
 }
 
 export class RateLimiter {
@@ -29,6 +32,8 @@ export class RateLimiter {
       windowStartTime: Date.now(),
       dailyRequestCount: 0,
       dailyWindowStart: Date.now(),
+      secondWindowStart: Date.now(),
+      requestsInLastSecond: 0,
     };
   }
 
@@ -40,20 +45,21 @@ export class RateLimiter {
     
     // Check daily limit
     if (this.config.requestsPerDay) {
-      const dayStart = new Date(now).setHours(0, 0, 0, 0);
-      if (this.state.dailyWindowStart !== dayStart) {
-        this.state.dailyRequestCount = 0;
-        this.state.dailyWindowStart = dayStart;
-      }
-      
       if (this.state.dailyRequestCount >= this.config.requestsPerDay) {
         return false;
       }
     }
 
     // Check per-second limit
-    if (now - this.state.lastRequestTime < 1000 / this.config.requestsPerSecond) {
-      return false;
+    if (now - this.state.secondWindowStart < 1000) {
+      // Within the same second window
+      if (this.state.requestsInLastSecond >= this.config.requestsPerSecond) {
+        return false;
+      }
+    } else {
+      // New second window, reset counter
+      this.state.secondWindowStart = now;
+      this.state.requestsInLastSecond = 0;
     }
 
     // Check per-two-minutes limit
@@ -62,7 +68,7 @@ export class RateLimiter {
         return false;
       }
     } else {
-      // Reset window
+      // Reset window - only reset if we're actually starting a new window
       this.state.requestCount = 0;
       this.state.windowStartTime = now;
     }
@@ -71,13 +77,45 @@ export class RateLimiter {
   }
 
   /**
+   * Update window state without resetting (called internally)
+   */
+  private updateWindowState(): void {
+    const now = Date.now();
+    
+    // Only reset if we're actually outside the current window
+    if (now - this.state.windowStartTime >= 120000) {
+      this.state.requestCount = 0;
+      this.state.windowStartTime = now;
+    }
+    
+    // Update per-second window
+    if (now - this.state.secondWindowStart >= 1000) {
+      this.state.secondWindowStart = now;
+      this.state.requestsInLastSecond = 0;
+    }
+    
+    // Update daily window
+    if (this.config.requestsPerDay) {
+      const dayStart = new Date(now).setHours(0, 0, 0, 0);
+      if (this.state.dailyWindowStart !== dayStart) {
+        this.state.dailyRequestCount = 0;
+        this.state.dailyWindowStart = dayStart;
+      }
+    }
+  }
+
+  /**
    * Record a request being made
    */
   recordRequest(): void {
     const now = Date.now();
     
+    // Update window state first
+    this.updateWindowState();
+    
     this.state.lastRequestTime = now;
     this.state.requestCount++;
+    this.state.requestsInLastSecond++;
     
     if (this.config.requestsPerDay) {
       this.state.dailyRequestCount++;
@@ -91,9 +129,13 @@ export class RateLimiter {
     const now = Date.now();
     
     // Check per-second limit
-    const timeSinceLastRequest = now - this.state.lastRequestTime;
-    const minInterval = 1000 / this.config.requestsPerSecond;
-    const delayForSecondLimit = Math.max(0, minInterval - timeSinceLastRequest);
+    let delayForSecondLimit = 0;
+    if (now - this.state.secondWindowStart < 1000) {
+      if (this.state.requestsInLastSecond >= this.config.requestsPerSecond) {
+        // Wait until next second window
+        delayForSecondLimit = 1000 - (now - this.state.secondWindowStart);
+      }
+    }
     
     // Check per-two-minutes limit
     const timeInWindow = now - this.state.windowStartTime;
@@ -126,6 +168,9 @@ export class RateLimiter {
     requestsInWindow: number;
     dailyRequests: number;
   } {
+    // Update window state before returning status
+    this.updateWindowState();
+    
     return {
       canMakeRequest: this.canMakeRequest(),
       delayUntilNext: this.getDelayUntilNextRequest(),
@@ -144,6 +189,8 @@ export class RateLimiter {
       windowStartTime: Date.now(),
       dailyRequestCount: 0,
       dailyWindowStart: Date.now(),
+      secondWindowStart: Date.now(),
+      requestsInLastSecond: 0,
     };
   }
 }

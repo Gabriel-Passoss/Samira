@@ -25,6 +25,10 @@ export function makeMatch(options: MakeMatchOptions = {}): Match {
   const gameEndTimestamp = gameCreation + (gameDuration * 1000);
   const gameStartTimestamp = gameCreation + 60000; // 1 minute after creation
 
+  // Generate win values for teams first
+  const team100Win = faker.datatype.boolean();
+  const team200Win = !team100Win; // Ensure opposite values
+
   const participants = Array.from({ length: participantsCount }, (_, index) => ({
     assists: faker.number.int({ min: 0, max: 25 }),
     baronKills: faker.number.int({ min: 0, max: 3 }),
@@ -116,7 +120,7 @@ export function makeMatch(options: MakeMatchOptions = {}): Match {
     profileIcon: faker.number.int({ min: 1, max: 1000 }),
     puuid: faker.string.uuid(),
     quadraKills: faker.number.int({ min: 0, max: 2 }),
-    riotIdName: faker.internet.userName(),
+    riotIdName: faker.internet.username(),
     riotIdTagline: faker.string.alphanumeric(4).toUpperCase(),
     role: faker.helpers.arrayElement(['SOLO', 'NONE', 'DUO_CARRY', 'DUO_SUPPORT']),
     sightWardsBoughtInGame: faker.number.int({ min: 0, max: 10 }),
@@ -130,7 +134,7 @@ export function makeMatch(options: MakeMatchOptions = {}): Match {
     summoner2Id: faker.number.int({ min: 1, max: 14 }),
     summonerId: faker.string.uuid(),
     summonerLevel: faker.number.int({ min: 1, max: 500 }),
-    summonerName: faker.internet.userName(),
+    summonerName: faker.internet.username(),
     teamEarlySurrendered: false,
     teamId: index < 5 ? 100 : 200,
     teamPosition: faker.helpers.arrayElement(['TOP', 'JUNGLE', 'MIDDLE', 'BOTTOM', 'UTILITY']),
@@ -158,7 +162,7 @@ export function makeMatch(options: MakeMatchOptions = {}): Match {
     visionWardsBoughtInGame: faker.number.int({ min: 0, max: 10 }),
     wardsKilled: faker.number.int({ min: 0, max: 20 }),
     wardsPlaced: faker.number.int({ min: 0, max: 30 }),
-    win: index < 5 ? faker.datatype.boolean() : !(index < 5 ? faker.datatype.boolean() : false), // Ensure team consistency
+    win: index < 5 ? team100Win : team200Win, // Ensure team consistency
   }));
 
   const puuids = participants.map(p => p.puuid);

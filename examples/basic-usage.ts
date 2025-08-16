@@ -1,4 +1,5 @@
-import { createSamira, Samira, PLATFORMS, REGIONS, createPlatformSamira, createRegionalSamira } from '../src';
+import { createSamira, Samira, createPlatformSamira, createRegionalSamira } from '../src/samira';
+import { PLATFORMS, REGIONS } from '../src/constants';
 
 // Example: Basic usage of the Samira library
 async function basicExample() {
@@ -77,6 +78,90 @@ async function platformExample() {
   }
 }
 
+// Example: Using services through the Samira class
+async function servicesExample() {
+  try {
+    console.log('\n🔧 Services Example:');
+    
+    // Create Samira instance
+    const samira = createSamira('YOUR_RIOT_API_KEY_HERE');
+    
+    // Access all services
+    console.log('📊 Available services:');
+    console.log('- Account Service:', typeof samira.account);
+    console.log('- Match Service:', typeof samira.match);
+    console.log('- Spectator Service:', typeof samira.spectator);
+    console.log('- Summoner Service:', typeof samira.summoner);
+    
+    // Example: Get account by Riot ID (requires regional routing)
+    console.log('\n👤 Account Service Example:');
+    samira.useRegionalRouting();
+    
+    // Note: This would make an actual API call if you had a valid API key
+    console.log('📡 Ready to call samira.account.getAccountByRiotId(gameName, tagLine)');
+    
+    // Example: Get summoner by PUUID (requires platform routing)
+    console.log('\n🎮 Summoner Service Example:');
+    samira.usePlatformRouting();
+    
+    // Note: This would make an actual API call if you had a valid API key
+    console.log('📡 Ready to call samira.summoner.getSummonerByPuuid(puuid)');
+    
+    // Example: Get match history (requires regional routing)
+    console.log('\n🏆 Match Service Example:');
+    samira.useRegionalRouting();
+    
+    // Note: This would make an actual API call if you had a valid API key
+    console.log('📡 Ready to call samira.match.getMatchHistoryByPUUID(puuid, options)');
+    
+    // Example: Check active game (requires platform routing)
+    console.log('\n👀 Spectator Service Example:');
+    samira.usePlatformRouting();
+    
+    // Note: This would make an actual API call if you had a valid API key
+    console.log('📡 Ready to call samira.spectator.getActiveGameByPuuid(puuid)');
+    
+  } catch (error) {
+    console.error('❌ Services error:', error);
+  }
+}
+
+// Example: Advanced configuration and routing
+async function advancedExample() {
+  try {
+    console.log('\n⚙️ Advanced Configuration Example:');
+    
+    // Create Samira with specific configuration
+    const samira = new Samira({
+      apiKey: 'YOUR_RIOT_API_KEY_HERE',
+      platform: PLATFORMS.NA1,
+      region: REGIONS.AMERICAS,
+    });
+    
+    console.log('🔧 Initial configuration:', samira.getConfig());
+    
+    // Switch to regional routing for account endpoints
+    samira.useRegionalRouting();
+    console.log('🌍 Switched to regional routing');
+    
+    // Switch back to platform routing for game-specific endpoints
+    samira.usePlatformRouting();
+    console.log('🎮 Switched to platform routing');
+    
+    // Update configuration
+    samira.updatePlatform(PLATFORMS.EUW1);
+    console.log('🇪🇺 Updated to EUW1 platform');
+    
+    samira.updateRegion(REGIONS.EUROPE);
+    console.log('🌍 Updated to Europe region');
+    
+    console.log('🔧 Final configuration:', samira.getConfig());
+    
+  } catch (error) {
+    console.error('❌ Advanced configuration error:', error);
+  }
+}
+
 // Main function to run examples
 async function runExamples() {
   console.log('🎮 Samira League of Legends API Library Examples\n');
@@ -86,6 +171,8 @@ async function runExamples() {
   
   await basicExample();
   await platformExample();
+  await servicesExample();
+  await advancedExample();
   
   console.log('\n🎉 Examples completed!');
 }
@@ -94,6 +181,8 @@ async function runExamples() {
 export {
   basicExample,
   platformExample,
+  servicesExample,
+  advancedExample,
   runExamples,
 };
 

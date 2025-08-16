@@ -41,7 +41,7 @@ export function makeActiveGame(options: MakeActiveGameOptions = {}): CurrentGame
       spell2Id: faker.helpers.arrayElement([1, 3, 4, 6, 7, 11, 12, 13, 14, 21]),
       championId: faker.number.int({ min: 1, max: 200 }),
       profileIconId: faker.number.int({ min: 1, max: 30 }),
-      summonerName: faker.internet.userName(),
+      summonerName: faker.internet.username(),
       bot: false,
       summonerId: faker.string.uuid(),
       gameCustomizationObjects: [],

@@ -87,6 +87,11 @@ export class HttpClient {
       const response = await this.client.get<T>(url, config);
       return right(this.formatResponse(response));
     } catch (error) {
+      // Check if error is already an ApiError (from response interceptor)
+      if (error && typeof error === 'object' && 'status' in error && 'message' in error) {
+        return left(error as ApiError);
+      }
+      // Otherwise, format the Axios error
       return left(this.formatError(error as AxiosError));
     }
   }
@@ -177,11 +182,36 @@ export class HttpClient {
    */
   private formatError(error: AxiosError): ApiError {
     if (error.response) {
-      // Server responded with error status
+      const responseData = error.response.data as any;
+      
+      // Handle nested status structure from Riot Games API
+      let status = error.response.status;
+      let statusText = error.response.statusText;
+      let message = this.getErrorMessage(status);
+      
+      if (responseData?.status) {
+        // Check if status is an object with status_code (Riot Games API format)
+        if (typeof responseData.status === 'object' && responseData.status.status_code) {
+          status = responseData.status.status_code;
+          message = responseData.status.message || message;
+        } else if (typeof responseData.status === 'number') {
+          // Direct status number
+          status = responseData.status;
+        }
+      }
+      
+      // Use response data values if available
+      if (responseData?.statusText) {
+        statusText = responseData.statusText;
+      }
+      if (responseData?.message && typeof responseData.message === 'string') {
+        message = responseData.message;
+      }
+      
       return {
-        status: error.response.status,
-        statusText: error.response.statusText,
-        message: this.getErrorMessage(error.response.status),
+        status,
+        statusText,
+        message,
         details: error.response.data,
       };
     } else if (error.request) {

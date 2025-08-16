@@ -1,4 +1,9 @@
 import { REGIONS, PLATFORMS } from './constants';
+import { HttpClient, createPlatformClient, createRegionalClient } from './utils/httpClient';
+import { AccountService } from './services/account';
+import { MatchService } from './services/match';
+import { SpectatorService } from './services/spectator';
+import { SummonerService } from './services/summoner';
 
 export interface SamiraConfig {
   apiKey: string;
@@ -8,6 +13,13 @@ export interface SamiraConfig {
 
 export class Samira {
   private config: SamiraConfig;
+  private httpClient: HttpClient;
+  
+  // Services
+  public account: AccountService;
+  public match: MatchService;
+  public spectator: SpectatorService;
+  public summoner: SummonerService;
 
   constructor(config: SamiraConfig) {
     this.config = config;
@@ -20,6 +32,15 @@ export class Samira {
     // Set default platform and region if not provided
     this.config.platform = config.platform || PLATFORMS.NA1;
     this.config.region = config.region || REGIONS.AMERICAS;
+
+    // Initialize HTTP client
+    this.httpClient = createPlatformClient(this.config.platform, this.config.apiKey);
+
+    // Initialize services
+    this.account = new AccountService(this.httpClient);
+    this.match = new MatchService(this.httpClient);
+    this.spectator = new SpectatorService(this.httpClient);
+    this.summoner = new SummonerService(this.httpClient);
   }
 
   /**
@@ -30,10 +51,18 @@ export class Samira {
   }
 
   /**
+   * Get the HTTP client instance
+   */
+  getHttpClient(): HttpClient {
+    return this.httpClient;
+  }
+
+  /**
    * Update the API key
    */
   updateApiKey(apiKey: string): void {
     this.config.apiKey = apiKey;
+    this.httpClient.updateApiKey(apiKey);
   }
 
   /**
@@ -41,6 +70,13 @@ export class Samira {
    */
   updatePlatform(platform: string): void {
     this.config.platform = platform;
+    // Recreate HTTP client with new platform
+    this.httpClient = createPlatformClient(platform, this.config.apiKey);
+    // Reinitialize services with new client
+    this.account = new AccountService(this.httpClient);
+    this.match = new MatchService(this.httpClient);
+    this.spectator = new SpectatorService(this.httpClient);
+    this.summoner = new SummonerService(this.httpClient);
   }
 
   /**
@@ -48,6 +84,41 @@ export class Samira {
    */
   updateRegion(region: string): void {
     this.config.region = region;
+    // Recreate HTTP client with new region
+    this.httpClient = createRegionalClient(region, this.config.apiKey);
+    // Reinitialize services with new client
+    this.account = new AccountService(this.httpClient);
+    this.match = new MatchService(this.httpClient);
+    this.spectator = new SpectatorService(this.httpClient);
+    this.summoner = new SummonerService(this.httpClient);
+  }
+
+  /**
+   * Switch to regional routing for account-related endpoints
+   */
+  useRegionalRouting(): void {
+    if (this.config.region) {
+      this.httpClient = createRegionalClient(this.config.region, this.config.apiKey);
+      // Reinitialize services with new client
+      this.account = new AccountService(this.httpClient);
+      this.match = new MatchService(this.httpClient);
+      this.spectator = new SpectatorService(this.httpClient);
+      this.summoner = new SummonerService(this.httpClient);
+    }
+  }
+
+  /**
+   * Switch to platform routing for game-specific endpoints
+   */
+  usePlatformRouting(): void {
+    if (this.config.platform) {
+      this.httpClient = createPlatformClient(this.config.platform, this.config.apiKey);
+      // Reinitialize services with new client
+      this.account = new AccountService(this.httpClient);
+      this.match = new MatchService(this.httpClient);
+      this.spectator = new SpectatorService(this.httpClient);
+      this.summoner = new SummonerService(this.httpClient);
+    }
   }
 
   /**
