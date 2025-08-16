@@ -63,7 +63,7 @@ export const ENDPOINTS = {
   CHAMPION_MASTERY_SCORE_BY_SUMMONER: '/lol/champion-mastery/v4/scores/by-summoner/{encryptedSummonerId}',
   
   // Spectator endpoints
-  CURRENT_GAME_BY_SUMMONER: '/lol/spectator/v4/active-games/by-summoner/{encryptedSummonerId}',
+  CURRENT_GAME_BY_SUMMONER: '/lol/spectator/v4/active-games/by-summoner/{encryptedPUUID}',
   
   // Status endpoints
   PLATFORM_STATUS: '/lol/status/v4/platform-data',
