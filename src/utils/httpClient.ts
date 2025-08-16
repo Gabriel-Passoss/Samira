@@ -267,7 +267,7 @@ export class HttpClient {
  */
 export function createPlatformClient(platform: string, apiKey: string): HttpClient {
   return new HttpClient({
-    baseURL: `https://${platform}`,
+    baseURL: `https://${platform}.api.riotgames.com`,
     apiKey,
   });
 }
