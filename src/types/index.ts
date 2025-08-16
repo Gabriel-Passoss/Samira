@@ -84,7 +84,7 @@ export const MatchSchema = z.object({
     participants: z.array(z.object({
       assists: z.number(),
       baronKills: z.number(),
-      bountyLevel: z.number(),
+      bountyLevel: z.number().optional(), // Make optional as it might not be present in all game modes
       champExperience: z.number(),
       champLevel: z.number(),
       championId: z.number(),
@@ -160,8 +160,8 @@ export const MatchSchema = z.object({
       profileIcon: z.number(),
       puuid: z.string(),
       quadraKills: z.number(),
-      riotIdName: z.string(),
-      riotIdTagline: z.string(),
+      riotIdName: z.string().optional(), // Make optional as it might not be present in all responses
+      riotIdTagline: z.string().optional(), // Make optional as it might not be present in all responses
       role: z.string(),
       sightWardsBoughtInGame: z.number(),
       spell1Casts: z.number(),
@@ -188,7 +188,7 @@ export const MatchSchema = z.object({
       totalHealsOnTeammates: z.number(),
       totalMinionsKilled: z.number(),
       totalTimeCCDealt: z.number(),
-      totalTimeDead: z.number(),
+      totalTimeDead: z.number().optional(), // Make optional as it might not be present in all responses
       totalUnitsHealed: z.number(),
       tripleKills: z.number(),
       trueDamageDealt: z.number(),
