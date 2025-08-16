@@ -54,11 +54,11 @@ export const ChampionsResponseSchema = z.record(z.string(), ChampionSchema);
 
 // Summoner schemas
 export const SummonerSchema = z.object({
-  accountId: z.string(),
+  accountId: z.string().optional(),
   profileIconId: z.number(),
   revisionDate: z.number(),
-  name: z.string(),
-  id: z.string(),
+  name: z.string().optional(),
+  id: z.string().optional(),
   puuid: z.string(),
   summonerLevel: z.number(),
 });
