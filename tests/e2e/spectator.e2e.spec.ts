@@ -52,7 +52,7 @@ describe('Spectator Service E2E', () => {
 
       expect(featuredGames.isRight()).toBe(true);
 
-      
+
 
       if (featuredGames.isRight()) {
         const game = featuredGames.value.gameList[0];

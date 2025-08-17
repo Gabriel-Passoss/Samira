@@ -28,15 +28,15 @@ describe('Constants', () => {
 
   describe('PLATFORMS', () => {
     it('should have major platforms', () => {
-      expect(PLATFORMS).toHaveProperty('NA1', 'na1.api.riotgames.com');
-      expect(PLATFORMS).toHaveProperty('EUW1', 'euw1.api.riotgames.com');
-      expect(PLATFORMS).toHaveProperty('KR', 'kr.api.riotgames.com');
-      expect(PLATFORMS).toHaveProperty('BR1', 'br1.api.riotgames.com');
+      expect(PLATFORMS).toHaveProperty('NA1', 'na1');
+      expect(PLATFORMS).toHaveProperty('EUW1', 'euw1');
+      expect(PLATFORMS).toHaveProperty('KR', 'kr');
+      expect(PLATFORMS).toHaveProperty('BR1', 'br1');
     });
 
     it('should have correct platform URL format', () => {
       Object.values(PLATFORMS).forEach(platform => {
-        expect(platform).toMatch(/^[a-z0-9]+\.api\.riotgames\.com$/);
+        expect(platform).toMatch(/^[a-z0-9]+$/);
       });
     });
 
@@ -47,15 +47,15 @@ describe('Constants', () => {
 
   describe('REGIONAL_ROUTING', () => {
     it('should have routing for each region', () => {
-      expect(REGIONAL_ROUTING).toHaveProperty('AMERICAS', 'americas.api.riotgames.com');
-      expect(REGIONAL_ROUTING).toHaveProperty('EUROPE', 'europe.api.riotgames.com');
-      expect(REGIONAL_ROUTING).toHaveProperty('ASIA', 'asia.api.riotgames.com');
-      expect(REGIONAL_ROUTING).toHaveProperty('SEA', 'sea.api.riotgames.com');
+      expect(REGIONAL_ROUTING).toHaveProperty('AMERICAS', 'americas');
+      expect(REGIONAL_ROUTING).toHaveProperty('EUROPE', 'europe');
+      expect(REGIONAL_ROUTING).toHaveProperty('ASIA', 'asia');
+      expect(REGIONAL_ROUTING).toHaveProperty('SEA', 'sea');
     });
 
     it('should have correct routing URL format', () => {
       Object.values(REGIONAL_ROUTING).forEach(routing => {
-        expect(routing).toMatch(/^[a-z]+\.api\.riotgames\.com$/);
+        expect(routing).toMatch(/^[a-z]+$/);
       });
     });
   });

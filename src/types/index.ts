@@ -310,7 +310,7 @@ export const CurrentGameSchema = z.object({
     profileIconId: z.number(),
     bot: z.boolean(),
     teamId: z.number(),
-    puuid: z.string(),
+    puuid: z.string().optional(), // Make optional as it might not be present in all responses
     spell1Id: z.number(),
     spell2Id: z.number(),
     gameCustomizationObjects: z.array(
@@ -323,7 +323,7 @@ export const CurrentGameSchema = z.object({
       perkIds: z.array(z.number()),
       perkStyle: z.number(),
       perkSubStyle: z.number(),
-    }),
+    }).optional(), // Make optional as it might not be present in all responses
   })),
 });
 

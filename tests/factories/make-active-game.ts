@@ -41,9 +41,8 @@ export function makeActiveGame(options: MakeActiveGameOptions = {}): CurrentGame
       spell2Id: faker.helpers.arrayElement([1, 3, 4, 6, 7, 11, 12, 13, 14, 21]),
       championId: faker.number.int({ min: 1, max: 200 }),
       profileIconId: faker.number.int({ min: 1, max: 30 }),
-      summonerName: faker.internet.username(),
+      puuid: faker.string.uuid(), // Add puuid field that the schema expects
       bot: false,
-      summonerId: faker.string.uuid(),
       gameCustomizationObjects: [],
       perks: {
         perkIds: Array.from({ length: faker.number.int({ min: 6, max: 9 }) }, () => faker.number.int({ min: 8000, max: 9000 })),
