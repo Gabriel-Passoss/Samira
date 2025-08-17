@@ -8,30 +8,30 @@ export const REGIONS = {
 
 // Platform routing values
 export const PLATFORMS = {
-  BR1: 'br1.api.riotgames.com',
-  EUN1: 'eun1.api.riotgames.com',
-  EUW1: 'euw1.api.riotgames.com',
-  JP1: 'jp1.api.riotgames.com',
-  KR: 'kr.api.riotgames.com',
-  LA1: 'la1.api.riotgames.com',
-  LA2: 'la2.api.riotgames.com',
-  NA1: 'na1.api.riotgames.com',
-  OC1: 'oc1.api.riotgames.com',
-  PH2: 'ph2.api.riotgames.com',
-  RU: 'ru.api.riotgames.com',
-  SG2: 'sg2.api.riotgames.com',
-  TH2: 'th2.api.riotgames.com',
-  TR1: 'tr1.api.riotgames.com',
-  TW2: 'tw2.api.riotgames.com',
-  VN2: 'vn2.api.riotgames.com',
+  BR1: 'br1',
+  EUN1: 'eun1',
+  EUW1: 'euw1',
+  JP1: 'jp1',
+  KR: 'kr',
+  LA1: 'la1',
+  LA2: 'la2',
+  NA1: 'na1',
+  OC1: 'oc1',
+  PH2: 'ph2',
+  RU: 'ru',
+  SG2: 'sg2',
+  TH2: 'th2',
+  TR1: 'tr1',
+  TW2: 'tw2',
+  VN2: 'vn2',
 } as const;
 
 // Regional routing values
 export const REGIONAL_ROUTING = {
-  AMERICAS: 'americas.api.riotgames.com',
-  ASIA: 'asia.api.riotgames.com',
-  EUROPE: 'europe.api.riotgames.com',
-  SEA: 'sea.api.riotgames.com',
+  AMERICAS: 'americas',
+  ASIA: 'asia',
+  EUROPE: 'europe',
+  SEA: 'sea',
 } as const;
 
 // API Endpoints
@@ -63,7 +63,8 @@ export const ENDPOINTS = {
   CHAMPION_MASTERY_SCORE_BY_SUMMONER: '/lol/champion-mastery/v4/scores/by-summoner/{encryptedSummonerId}',
   
   // Spectator endpoints
-  CURRENT_GAME_BY_SUMMONER: '/lol/spectator/v4/active-games/by-summoner/{encryptedPUUID}',
+  CURRENT_GAME_BY_SUMMONER: '/lol/spectator/v5/active-games/by-summoner/{encryptedPUUID}',
+  FEATURED_GAMES: '/lol/spectator/v5/featured-games',
   
   // Status endpoints
   PLATFORM_STATUS: '/lol/status/v4/platform-data',
