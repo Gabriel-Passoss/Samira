@@ -306,24 +306,61 @@ export const CurrentGameSchema = z.object({
     encryptionKey: z.string(),
   }),
   participants: z.array(z.object({
-    teamId: z.number(),
-    spell1Id: z.number(),
-    spell2Id: z.number(),
     championId: z.number(),
     profileIconId: z.number(),
-    summonerName: z.string(),
     bot: z.boolean(),
-    summonerId: z.string(),
-    gameCustomizationObjects: z.array(z.object({
-      category: z.string(),
-      content: z.string(),
-    })),
+    teamId: z.number(),
+    puuid: z.string(),
+    spell1Id: z.number(),
+    spell2Id: z.number(),
+    gameCustomizationObjects: z.array(
+      z.object({
+        category: z.string(),
+        content: z.string(),
+      })
+    ),
     perks: z.object({
       perkIds: z.array(z.number()),
       perkStyle: z.number(),
       perkSubStyle: z.number(),
     }),
   })),
+});
+
+export const FeaturedGamesSchema = z.object({
+  gameList: z.array(
+    z.object({
+      gameMode: z.string(),
+      gameLength: z.number(),
+      mapId: z.number(),
+      gameType: z.string(),
+      bannedChampions: z.array(
+        z.object({
+          pickTurn: z.number(),
+          championId: z.number(),
+          teamId: z.number(),
+        })
+      ),
+      gameId: z.number(),
+      observers: z.object({
+        encryptionKey: z.string(),
+      }),
+      gameQueueConfigId: z.number(),
+      participants: z.array(
+        z.object({
+          bot: z.boolean(),
+          spell1Id: z.number(),
+          spell2Id: z.number(),
+          profileIconId: z.number(),
+          puuid: z.string(),
+          championId: z.number(),
+          teamId: z.number(),
+        })
+      ),
+      platformId: z.string(),
+    })
+  ),
+  clientRefreshInterval: z.number().optional(),
 });
 
 // Type exports
@@ -335,4 +372,5 @@ export type LeagueEntry = z.infer<typeof LeagueEntrySchema>;
 export type Account = z.infer<typeof AccountSchema>;
 export type ChampionMastery = z.infer<typeof ChampionMasterySchema>;
 export type CurrentGame = z.infer<typeof CurrentGameSchema>;
+export type FeaturedGames = z.infer<typeof FeaturedGamesSchema>;
 export type BaseApiResponse = z.infer<typeof BaseApiResponse>;
