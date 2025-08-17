@@ -49,8 +49,6 @@ describe('Summoner Service E2E', () => {
 
       const result = await samira.summoner.getSummonerByPuuid(puuid);
 
-      console.log(result.value);
-
       expect(result.isRight()).toBe(true);
       if (result.isRight()) {
         const summoner = result.value as any;
@@ -67,7 +65,6 @@ describe('Summoner Service E2E', () => {
 
       expect(result.isLeft()).toBe(true);
       if (result.isLeft()) {
-        console.log(result.value);
         expect(result.value.status).toBe(400);
         expect(result.value.message).toContain(`Bad Request - Exception decrypting ${invalidPUUID}`);
       }

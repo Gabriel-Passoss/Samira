@@ -50,10 +50,6 @@ describe('Match Service E2E', () => {
 
       const result = await samira.match.getMatchById(matchId);
 
-      if(result.isLeft()) {
-        console.log(result.value);
-      }
-
       expect(result.isRight()).toBe(true);
       if (result.isRight()) {
         const match = result.value as any;
@@ -74,7 +70,6 @@ describe('Match Service E2E', () => {
 
       expect(result.isLeft()).toBe(true);
       if (result.isLeft()) {
-        console.log(result.value);
         expect(result.value.status).toBe(404);
         expect(result.value.message).toContain('match file not found');
       }
