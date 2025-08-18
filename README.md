@@ -1,4 +1,4 @@
-# Samira - League of Legends API Library 
+# Samira - League of Legends API Library
 
 [![](https://img.shields.io/npm/v/samira.svg)](https://www.npmjs.com/package/samira)
 
@@ -53,6 +53,7 @@ const samira = new Samira({
 ## Services
 
 ### Account Service
+
 ```typescript
 // Get account by Riot ID
 const account = await samira.account.getAccountByRiotId('GameName', 'TagLine');
@@ -62,12 +63,14 @@ const account = await samira.account.getAccountByPuuid('puuid-here');
 ```
 
 ### Summoner Service
+
 ```typescript
 // Get summoner by PUUID
 const summoner = await samira.summoner.getSummonerByPuuid('puuid-here');
 ```
 
 ### Match Service
+
 ```typescript
 // Get match by ID
 const match = await samira.match.getMatchById('match-id-here');
@@ -80,6 +83,7 @@ const recentMatches = await samira.match.getRecentMatches('puuid-here', 20);
 ```
 
 ### Spectator Service
+
 ```typescript
 // Get active game by PUUID
 const activeGame = await samira.spectator.getActiveGameByPuuid('puuid-here');
@@ -89,6 +93,7 @@ const featuredGames = await samira.spectator.getFeaturedGames();
 ```
 
 ### Data Dragon Service
+
 ```typescript
 // Get latest game version
 const versions = await samira.dataDragon.getLatestVersion();
@@ -174,12 +179,14 @@ samira.dataDragon.updateConfig({
 ## Routing
 
 ### Platform Routing (Game-specific endpoints)
+
 ```typescript
 samira.usePlatformRouting(); // Uses platform-specific endpoints
 // Examples: /lol/summoner/v4/, /lol/match/v5/, /lol/spectator/v5/
 ```
 
 ### Regional Routing (Account endpoints)
+
 ```typescript
 samira.useRegionalRouting(); // Uses regional endpoints
 // Examples: /riot/account/v1/
@@ -240,6 +247,7 @@ npm run test:coverage
 ## API Reference
 
 ### Samira Class
+
 - `constructor(config: SamiraConfig)`
 - `getConfig(): SamiraConfig`
 - `getHttpClient(): HttpClient`
@@ -250,6 +258,7 @@ npm run test:coverage
 - `usePlatformRouting(): void`
 
 ### Data Dragon Service
+
 - `getLatestVersion(): Promise<Either<ApiError, string[]>>`
 - `getChampions(version?: string): Promise<Either<ApiError, Record<string, ChampionAsset>>>`
 - `getChampion(championId: string, version?: string): Promise<Either<ApiError, ChampionAsset>>`

@@ -16,15 +16,15 @@ describe('AccountService', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // Create a mock HttpClient instance
     mockHttpClient = {
       get: vi.fn(),
     };
-    
+
     // Mock the HttpClient constructor to return our mock
     (HttpClient as any).mockImplementation(() => mockHttpClient);
-    
+
     // Create the service with the mocked client
     accountService = new AccountService(mockHttpClient);
   });
@@ -39,7 +39,9 @@ describe('AccountService', () => {
     it('should fetch account by puuid successfully', async () => {
       const puuid = '1234';
       const mockAccount = makeAccount({ puuid });
-      mockHttpClient.get.mockResolvedValue(right({ data: mockAccount, status: 200, statusText: 'OK', headers: {} }));
+      mockHttpClient.get.mockResolvedValue(
+        right({ data: mockAccount, status: 200, statusText: 'OK', headers: {} }),
+      );
 
       const result = await accountService.getAccountByPuuid(puuid);
       expect(result.isRight()).toBe(true);
@@ -64,7 +66,9 @@ describe('AccountService', () => {
       const gameName = 'test';
       const tagLine = '1234';
       const mockAccount = makeAccount({ gameName, tagLine });
-      mockHttpClient.get.mockResolvedValue(right({ data: mockAccount, status: 200, statusText: 'OK', headers: {} }));
+      mockHttpClient.get.mockResolvedValue(
+        right({ data: mockAccount, status: 200, statusText: 'OK', headers: {} }),
+      );
 
       const result = await accountService.getAccountByRiotId(gameName, tagLine);
       expect(result.isRight()).toBe(true);

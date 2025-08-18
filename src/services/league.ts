@@ -1,8 +1,8 @@
-import { z } from "zod";
-import { ENDPOINTS } from "../constants";
-import { LeagueEntrySchema, type LeagueEntry } from "../types";
-import { left, right, type Either } from "../types/either";
-import type { HttpClient, ApiError } from "../utils/httpClient";
+import { z } from 'zod';
+import { ENDPOINTS } from '../constants';
+import { LeagueEntrySchema, type LeagueEntry } from '../types';
+import { left, right, type Either } from '../types/either';
+import type { HttpClient, ApiError } from '../utils/httpClient';
 
 export class LeagueService {
   constructor(private readonly httpClient: HttpClient) {}
@@ -14,7 +14,7 @@ export class LeagueService {
     if (response.isLeft()) {
       return left(response.value);
     }
-    
+
     try {
       const entries = z.array(LeagueEntrySchema).parse(response.value.data);
       return right(entries);

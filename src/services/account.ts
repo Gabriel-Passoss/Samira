@@ -1,7 +1,7 @@
-import { ENDPOINTS } from "../constants";
-import { AccountSchema, type Account } from "../types";
-import { left, right, type Either } from "../types/either";
-import type { HttpClient, ApiError } from "../utils/httpClient";
+import { ENDPOINTS } from '../constants';
+import { AccountSchema, type Account } from '../types';
+import { left, right, type Either } from '../types/either';
+import type { HttpClient, ApiError } from '../utils/httpClient';
 
 export class AccountService {
   constructor(private readonly httpClient: HttpClient) {}
@@ -19,7 +19,10 @@ export class AccountService {
   }
 
   async getAccountByRiotId(gameName: string, tagLine: string): Promise<Either<ApiError, Account>> {
-    const url = ENDPOINTS.ACCOUNT_BY_RIOT_ID.replace('{gameName}', gameName).replace('{tagLine}', tagLine);
+    const url = ENDPOINTS.ACCOUNT_BY_RIOT_ID.replace('{gameName}', gameName).replace(
+      '{tagLine}',
+      tagLine,
+    );
     const response = await this.httpClient.get<Account>(url);
 
     if (response.isLeft()) {

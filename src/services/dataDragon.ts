@@ -30,10 +30,10 @@ export class DataDragonService {
       baseUrl: config.baseUrl || 'https://ddragon.leagueoflegends.com',
       includeFullUrl: config.includeFullUrl || false,
     };
-    
+
     this.baseUrl = this.config.baseUrl!;
     this.language = this.config.language!;
-    
+
     // Set initial version - will be updated if 'latest' is specified
     if (this.config.version === 'latest') {
       this.version = 'latest'; // Will be fetched on first use
@@ -77,7 +77,9 @@ export class DataDragonService {
       }
     } catch (error) {
       console.error('❌ Error fetching latest version:', error);
-      throw new Error(`Failed to initialize Data Dragon service: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to initialize Data Dragon service: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
     }
   }
 
@@ -87,11 +89,11 @@ export class DataDragonService {
   async getLatestVersion(): Promise<Either<ApiError, string[]>> {
     const url = `${this.baseUrl}/api/versions.json`;
     const response = await this.client.get<string[]>(url);
-    
+
     if (response.isLeft()) {
       return left(response.value);
     }
-    
+
     return right(response.value.data);
   }
 
@@ -102,11 +104,11 @@ export class DataDragonService {
     const ver = version || this.version;
     const url = `${this.baseUrl}/cdn/${ver}/data/${this.language}/champion.json`;
     const response = await this.client.get<{ data: Record<string, ChampionAsset> }>(url);
-    
+
     if (response.isLeft()) {
       return left(response.value);
     }
-    
+
     try {
       // Validate the response data with Zod
       const champions = z.record(z.string(), ChampionAssetSchema).parse(response.value.data.data);
@@ -124,23 +126,26 @@ export class DataDragonService {
   /**
    * Get specific champion data
    */
-  async getChampion(championId: string, version?: string): Promise<Either<ApiError, ChampionAsset>> {
+  async getChampion(
+    championId: string,
+    version?: string,
+  ): Promise<Either<ApiError, ChampionAsset>> {
     // Ensure version is ready if using 'latest'
     await this.ensureVersionReady();
-    
+
     const ver = version || this.version;
     const url = `${this.baseUrl}/cdn/${ver}/data/${this.language}/champion/${championId}.json`;
     const response = await this.client.get<{ data: Record<string, ChampionAsset> }>(url);
-    
+
     if (response.isLeft()) {
       return left(response.value);
     }
-    
+
     try {
       // Extract the champion data (the response has a nested structure)
       const championData = response.value.data.data;
       const championKey = Object.keys(championData)[0];
-      
+
       if (!championKey) {
         return left({
           status: 404,
@@ -148,7 +153,7 @@ export class DataDragonService {
           message: `Champion ${championId} not found`,
         });
       }
-      
+
       const champion = championData[championKey];
       if (!champion) {
         return left({
@@ -157,7 +162,7 @@ export class DataDragonService {
           message: `Champion ${championId} data is invalid`,
         });
       }
-      
+
       // Validate the champion data with Zod
       const validatedChampion = ChampionAssetSchema.parse(champion);
       return right(validatedChampion);
@@ -177,15 +182,15 @@ export class DataDragonService {
   async getItems(version?: string): Promise<Either<ApiError, Record<string, ItemAsset>>> {
     // Ensure version is ready if using 'latest'
     await this.ensureVersionReady();
-    
+
     const ver = version || this.version;
     const url = `${this.baseUrl}/cdn/${ver}/data/${this.language}/item.json`;
     const response = await this.client.get<{ data: Record<string, ItemAsset> }>(url);
-    
+
     if (response.isLeft()) {
       return left(response.value);
     }
-    
+
     try {
       // Validate the response data with Zod
       const items = z.record(z.string(), ItemAssetSchema).parse(response.value.data.data);
@@ -206,15 +211,15 @@ export class DataDragonService {
   async getItem(itemId: string, version?: string): Promise<Either<ApiError, ItemAsset>> {
     // Ensure version is ready if using 'latest'
     await this.ensureVersionReady();
-    
+
     const ver = version || this.version;
     const url = `${this.baseUrl}/cdn/${ver}/data/${this.language}/item.json`;
     const response = await this.client.get<{ data: Record<string, ItemAsset> }>(url);
-    
+
     if (response.isLeft()) {
       return left(response.value);
     }
-    
+
     const item = response.value.data.data[itemId];
     if (!item) {
       return left({
@@ -223,7 +228,7 @@ export class DataDragonService {
         message: `Item with ID ${itemId} not found`,
       });
     }
-    
+
     try {
       // Validate the item data with Zod
       const validatedItem = ItemAssetSchema.parse(item);
@@ -244,15 +249,15 @@ export class DataDragonService {
   async getRunes(version?: string): Promise<Either<ApiError, RuneAsset[]>> {
     // Ensure version is ready if using 'latest'
     await this.ensureVersionReady();
-    
+
     const ver = version || this.version;
     const url = `${this.baseUrl}/cdn/${ver}/data/${this.language}/runesReforged.json`;
     const response = await this.client.get<RuneAsset[]>(url);
-    
+
     if (response.isLeft()) {
       return left(response.value);
     }
-    
+
     try {
       // Validate the response data with Zod
       const runes = z.array(RuneAssetSchema).parse(response.value.data);
@@ -270,18 +275,20 @@ export class DataDragonService {
   /**
    * Get summoner spells data
    */
-  async getSummonerSpells(version?: string): Promise<Either<ApiError, Record<string, SummonerSpellAsset>>> {
+  async getSummonerSpells(
+    version?: string,
+  ): Promise<Either<ApiError, Record<string, SummonerSpellAsset>>> {
     // Ensure version is ready if using 'latest'
     await this.ensureVersionReady();
-    
+
     const ver = version || this.version;
     const url = `${this.baseUrl}/cdn/${ver}/data/${this.language}/summoner.json`;
     const response = await this.client.get<{ data: Record<string, SummonerSpellAsset> }>(url);
-    
+
     if (response.isLeft()) {
       return left(response.value);
     }
-    
+
     try {
       // Validate the response data with Zod
       const spells = z.record(z.string(), SummonerSpellAssetSchema).parse(response.value.data.data);
@@ -310,10 +317,10 @@ export class DataDragonService {
    * Get champion image URL
    */
   getChampionImageUrl(championId: string, skinId?: string): string {
-    const imagePath = skinId 
+    const imagePath = skinId
       ? `img/champion/${championId}${skinId === '0' ? '' : `_${skinId}`}.png`
       : `img/champion/${championId}.png`;
-    
+
     return this.getAssetUrl(imagePath);
   }
 
@@ -353,10 +360,10 @@ export class DataDragonService {
    * Get champion splash art URL
    */
   getChampionSplashUrl(championId: string, skinId?: string): string {
-    const imagePath = skinId 
+    const imagePath = skinId
       ? `img/champion/splash/${championId}${skinId === '0' ? '_0' : `_${skinId}`}.png`
       : `img/champion/splash/${championId}.png`;
-    
+
     return this.getAssetUrl(imagePath);
   }
 
@@ -364,11 +371,10 @@ export class DataDragonService {
    * Get champion loading screen URL
    */
   getChampionLoadingUrl(championId: string, skinId?: string): string {
-    const imageUrl = skinId 
+    const imageUrl = skinId
       ? `https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${championId}${skinId === '0' && skinId !== undefined ? '_0' : `_${skinId}`}.jpg`
       : `https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${championId}_0.jpg`;
 
-    
     return imageUrl;
   }
 
@@ -380,7 +386,7 @@ export class DataDragonService {
     this.config = { ...this.config, ...config };
     this.baseUrl = this.config.baseUrl || 'https://ddragon.leagueoflegends.com';
     this.language = this.config.language || 'en_US';
-    
+
     // If version changed to 'latest', reset the fetched state
     if (this.config.version === 'latest' && oldVersion !== 'latest') {
       this.isVersionFetched = false;

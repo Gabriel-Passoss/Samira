@@ -42,7 +42,7 @@ export class RateLimiter {
    */
   canMakeRequest(): boolean {
     const now = Date.now();
-    
+
     // Check daily limit
     if (this.config.requestsPerDay) {
       if (this.state.dailyRequestCount >= this.config.requestsPerDay) {
@@ -81,19 +81,19 @@ export class RateLimiter {
    */
   private updateWindowState(): void {
     const now = Date.now();
-    
+
     // Only reset if we're actually outside the current window
     if (now - this.state.windowStartTime >= 120000) {
       this.state.requestCount = 0;
       this.state.windowStartTime = now;
     }
-    
+
     // Update per-second window
     if (now - this.state.secondWindowStart >= 1000) {
       this.state.secondWindowStart = now;
       this.state.requestsInLastSecond = 0;
     }
-    
+
     // Update daily window
     if (this.config.requestsPerDay) {
       const dayStart = new Date(now).setHours(0, 0, 0, 0);
@@ -109,14 +109,14 @@ export class RateLimiter {
    */
   recordRequest(): void {
     const now = Date.now();
-    
+
     // Update window state first
     this.updateWindowState();
-    
+
     this.state.lastRequestTime = now;
     this.state.requestCount++;
     this.state.requestsInLastSecond++;
-    
+
     if (this.config.requestsPerDay) {
       this.state.dailyRequestCount++;
     }
@@ -127,7 +127,7 @@ export class RateLimiter {
    */
   getDelayUntilNextRequest(): number {
     const now = Date.now();
-    
+
     // Check per-second limit
     let delayForSecondLimit = 0;
     if (now - this.state.secondWindowStart < 1000) {
@@ -136,16 +136,16 @@ export class RateLimiter {
         delayForSecondLimit = 1000 - (now - this.state.secondWindowStart);
       }
     }
-    
+
     // Check per-two-minutes limit
     const timeInWindow = now - this.state.windowStartTime;
     const remainingRequests = this.config.requestsPerTwoMinutes - this.state.requestCount;
-    
+
     let delayForTwoMinuteLimit = 0;
     if (remainingRequests <= 0) {
       delayForTwoMinuteLimit = 120000 - timeInWindow;
     }
-    
+
     return Math.max(delayForSecondLimit, delayForTwoMinuteLimit);
   }
 
@@ -155,7 +155,7 @@ export class RateLimiter {
   async waitForNextRequest(): Promise<void> {
     const delay = this.getDelayUntilNextRequest();
     if (delay > 0) {
-      await new Promise(resolve => setTimeout(resolve, delay));
+      await new Promise((resolve) => setTimeout(resolve, delay));
     }
   }
 
@@ -170,7 +170,7 @@ export class RateLimiter {
   } {
     // Update window state before returning status
     this.updateWindowState();
-    
+
     return {
       canMakeRequest: this.canMakeRequest(),
       delayUntilNext: this.getDelayUntilNextRequest(),
@@ -204,19 +204,19 @@ export const DEFAULT_RATE_LIMITS: Record<string, RateLimitConfig> = {
     requestsPerSecond: 20,
     requestsPerTwoMinutes: 100,
   },
-  
+
   // Match endpoints (100 requests per second, 2000 requests per 2 minutes)
   match: {
     requestsPerSecond: 100,
     requestsPerTwoMinutes: 2000,
   },
-  
+
   // Spectator endpoints (20 requests per second, 100 requests per 2 minutes)
   spectator: {
     requestsPerSecond: 20,
     requestsPerTwoMinutes: 100,
   },
-  
+
   // Status endpoints (20 requests per second, 100 requests per 2 minutes)
   status: {
     requestsPerSecond: 20,
@@ -227,6 +227,8 @@ export const DEFAULT_RATE_LIMITS: Record<string, RateLimitConfig> = {
 /**
  * Create a rate limiter for a specific endpoint type
  */
-export function createRateLimiter(endpointType: keyof typeof DEFAULT_RATE_LIMITS = 'default'): RateLimiter {
+export function createRateLimiter(
+  endpointType: keyof typeof DEFAULT_RATE_LIMITS = 'default',
+): RateLimiter {
   return new RateLimiter(DEFAULT_RATE_LIMITS[endpointType]!);
 }

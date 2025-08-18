@@ -16,10 +16,10 @@ describe('Match Service E2E', () => {
     // Initialize Samira with regional routing for account endpoints
     samira = new Samira({
       apiKey: process.env.RIOT_API_KEY!,
-      platform: "BR1",
+      platform: 'BR1',
       region: REGIONS.AMERICAS,
     });
-    
+
     console.log('🚀 Samira initialized with config:', samira.getConfig());
 
     samira.useRegionalRouting();
@@ -28,14 +28,14 @@ describe('Match Service E2E', () => {
   // Rate limiting helper function
   const waitForRateLimit = async () => {
     const status = samira.getHttpClient().getRateLimitStatus();
-    
+
     if (!status.canMakeRequest) {
       const delay = status.delayUntilNext;
-      await new Promise(resolve => setTimeout(resolve, delay + 100));
+      await new Promise((resolve) => setTimeout(resolve, delay + 100));
     }
-    
+
     if (status.requestsInWindow >= 80) {
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
     }
   };
 
@@ -86,22 +86,22 @@ describe('Match Service E2E', () => {
       expect(result.isRight()).toBe(true);
       if (result.isRight()) {
         const account = result.value;
-        
+
         // Validate data structure
         expect(account).toHaveProperty('puuid');
         expect(account).toHaveProperty('gameName');
         expect(account).toHaveProperty('tagLine');
-        
+
         // Validate data types
         expect(typeof account.puuid).toBe('string');
         expect(typeof account.gameName).toBe('string');
         expect(typeof account.tagLine).toBe('string');
-        
+
         // Validate data content
         expect(account.puuid.length).toBeGreaterThan(0);
         expect(account.gameName.length).toBeGreaterThan(0);
         expect(account.tagLine.length).toBeGreaterThan(0);
-        
+
         expect(account.puuid).toMatch(/^[a-zA-Z0-9_-]{70,80}$/);
       }
     });
@@ -114,9 +114,9 @@ describe('Match Service E2E', () => {
         apiKey: process.env.RIOT_API_KEY!,
         platform: 'invalid-platform',
       });
-      
+
       const result = await invalidSamira.account.getAccountByRiotId('Dave Mustaine', 'trash');
-      
+
       expect(result.isLeft()).toBe(true);
       if (result.isLeft()) {
         expect(result.value.message).toContain('No response received from server');
@@ -129,12 +129,12 @@ describe('Match Service E2E', () => {
         apiKey: 'invalid-api-key',
         region: 'americas',
       });
-      
+
       // Use regional routing for account endpoints
       invalidSamira.useRegionalRouting();
-      
+
       const result = await invalidSamira.account.getAccountByRiotId('Faker', 'KR1');
-      
+
       expect(result.isLeft()).toBe(true);
       if (result.isLeft()) {
         expect(result.value.status).toBe(401);

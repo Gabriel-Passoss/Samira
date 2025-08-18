@@ -4,9 +4,9 @@ import { HttpClient } from '../../src/utils/httpClient';
 import { ENDPOINTS } from '../../src/constants';
 import { right, left } from '../../src/types/either';
 import { LeagueEntry } from '../../src/types';
-import { 
-  makeLeagueEntry, 
-  makeLeagueEntries, 
+import {
+  makeLeagueEntry,
+  makeLeagueEntries,
   makeLeagueEntryWithMiniSeries,
   makeLeagueEntriesWithDifferentQueues,
   makeLeagueEntriesWithDifferentTiers,
@@ -22,15 +22,15 @@ describe('LeagueService', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // Create a mock HttpClient instance
     mockHttpClient = {
       get: vi.fn(),
     };
-    
+
     // Mock the HttpClient constructor to return our mock
     (HttpClient as any).mockImplementation(() => mockHttpClient);
-    
+
     // Create the service with the mocked client
     leagueService = new LeagueService(mockHttpClient);
   });
@@ -76,20 +76,22 @@ describe('LeagueService', () => {
         }),
       ];
 
-      mockHttpClient.get.mockResolvedValue(right({
-        data: mockLeagueEntries,
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-      }));
+      mockHttpClient.get.mockResolvedValue(
+        right({
+          data: mockLeagueEntries,
+          status: 200,
+          statusText: 'OK',
+          headers: {},
+        }),
+      );
 
       const result = await leagueService.getEntriesByPuuid(puuid);
-      
+
       expect(result.isRight()).toBe(true);
       if (result.isRight()) {
         expect(result.value).toEqual(mockLeagueEntries);
         expect(result.value).toHaveLength(2);
-        
+
         // Check first entry
         const firstEntry = result.value[0];
         expect(firstEntry.leagueId).toBe('league-1');
@@ -105,7 +107,7 @@ describe('LeagueService', () => {
         expect(firstEntry.freshBlood).toBe(true);
         expect(firstEntry.inactive).toBe(false);
         expect(firstEntry.miniSeries).toBeUndefined();
-        
+
         // Check second entry with mini series
         const secondEntry = result.value[1];
         expect(secondEntry.leagueId).toBe('league-2');
@@ -120,10 +122,10 @@ describe('LeagueService', () => {
           expect(secondEntry.miniSeries.wins).toBe(2);
         }
       }
-      
+
       // Verify the correct endpoint was called
       expect(mockHttpClient.get).toHaveBeenCalledWith(
-        ENDPOINTS.LEAGUE_ENTRIES_BY_PUUID.replace('{encryptedPUUID}', puuid)
+        ENDPOINTS.LEAGUE_ENTRIES_BY_PUUID.replace('{encryptedPUUID}', puuid),
       );
       expect(mockHttpClient.get).toHaveBeenCalledTimes(1);
     });
@@ -132,15 +134,17 @@ describe('LeagueService', () => {
       const puuid = 'test-puuid-456';
       const mockLeagueEntries: LeagueEntry[] = [];
 
-      mockHttpClient.get.mockResolvedValue(right({
-        data: mockLeagueEntries,
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-      }));
+      mockHttpClient.get.mockResolvedValue(
+        right({
+          data: mockLeagueEntries,
+          status: 200,
+          statusText: 'OK',
+          headers: {},
+        }),
+      );
 
       const result = await leagueService.getEntriesByPuuid(puuid);
-      
+
       expect(result.isRight()).toBe(true);
       if (result.isRight()) {
         expect(result.value).toEqual([]);
@@ -164,15 +168,17 @@ describe('LeagueService', () => {
         inactive: false,
       });
 
-      mockHttpClient.get.mockResolvedValue(right({
-        data: [mockLeagueEntry],
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-      }));
+      mockHttpClient.get.mockResolvedValue(
+        right({
+          data: [mockLeagueEntry],
+          status: 200,
+          statusText: 'OK',
+          headers: {},
+        }),
+      );
 
       const result = await leagueService.getEntriesByPuuid(puuid);
-      
+
       expect(result.isRight()).toBe(true);
       if (result.isRight()) {
         expect(result.value).toHaveLength(1);
@@ -192,16 +198,16 @@ describe('LeagueService', () => {
       mockHttpClient.get.mockResolvedValue(left(mockError));
 
       const result = await leagueService.getEntriesByPuuid(puuid);
-      
+
       expect(result.isLeft()).toBe(true);
       if (result.isLeft()) {
         expect(result.value.status).toBe(404);
         expect(result.value.statusText).toBe('Not Found');
         expect(result.value.message).toBe('Summoner not found');
       }
-      
+
       expect(mockHttpClient.get).toHaveBeenCalledWith(
-        ENDPOINTS.LEAGUE_ENTRIES_BY_PUUID.replace('{encryptedPUUID}', puuid)
+        ENDPOINTS.LEAGUE_ENTRIES_BY_PUUID.replace('{encryptedPUUID}', puuid),
       );
     });
 
@@ -216,7 +222,7 @@ describe('LeagueService', () => {
       mockHttpClient.get.mockResolvedValue(left(mockError));
 
       const result = await leagueService.getEntriesByPuuid(puuid);
-      
+
       expect(result.isLeft()).toBe(true);
       if (result.isLeft()) {
         expect(result.value.status).toBe(500);
@@ -235,7 +241,7 @@ describe('LeagueService', () => {
       mockHttpClient.get.mockResolvedValue(left(mockError));
 
       const result = await leagueService.getEntriesByPuuid(puuid);
-      
+
       expect(result.isLeft()).toBe(true);
       if (result.isLeft()) {
         expect(result.value.status).toBe(429);
@@ -263,15 +269,17 @@ describe('LeagueService', () => {
         },
       ];
 
-      mockHttpClient.get.mockResolvedValue(right({
-        data: invalidData,
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-      }));
+      mockHttpClient.get.mockResolvedValue(
+        right({
+          data: invalidData,
+          status: 200,
+          statusText: 'OK',
+          headers: {},
+        }),
+      );
 
       const result = await leagueService.getEntriesByPuuid(puuid);
-      
+
       // The service should handle validation errors and return them
       expect(result.isLeft()).toBe(true);
       if (result.isLeft()) {
@@ -286,27 +294,29 @@ describe('LeagueService', () => {
       const puuid = 'test-puuid-queues';
       const mockLeagueEntries = makeLeagueEntriesWithDifferentQueues();
 
-      mockHttpClient.get.mockResolvedValue(right({
-        data: mockLeagueEntries,
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-      }));
+      mockHttpClient.get.mockResolvedValue(
+        right({
+          data: mockLeagueEntries,
+          status: 200,
+          statusText: 'OK',
+          headers: {},
+        }),
+      );
 
       const result = await leagueService.getEntriesByPuuid(puuid);
-      
+
       expect(result.isRight()).toBe(true);
       if (result.isRight()) {
         expect(result.value).toHaveLength(3);
-        
-        const soloEntry = result.value.find(entry => entry.queueType === 'RANKED_SOLO_5x5');
-        const flexEntry = result.value.find(entry => entry.queueType === 'RANKED_FLEX_SR');
-        const tftEntry = result.value.find(entry => entry.queueType === 'RANKED_TFT');
-        
+
+        const soloEntry = result.value.find((entry) => entry.queueType === 'RANKED_SOLO_5x5');
+        const flexEntry = result.value.find((entry) => entry.queueType === 'RANKED_FLEX_SR');
+        const tftEntry = result.value.find((entry) => entry.queueType === 'RANKED_TFT');
+
         expect(soloEntry).toBeDefined();
         expect(flexEntry).toBeDefined();
         expect(tftEntry).toBeDefined();
-        
+
         expect(soloEntry?.tier).toBe('GOLD');
         expect(flexEntry?.tier).toBe('SILVER');
         expect(tftEntry?.tier).toBe('PLATINUM');
@@ -317,25 +327,27 @@ describe('LeagueService', () => {
       const puuid = 'test-puuid-tiers';
       const mockLeagueEntries = makeLeagueEntriesWithDifferentTiers();
 
-      mockHttpClient.get.mockResolvedValue(right({
-        data: mockLeagueEntries,
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-      }));
+      mockHttpClient.get.mockResolvedValue(
+        right({
+          data: mockLeagueEntries,
+          status: 200,
+          statusText: 'OK',
+          headers: {},
+        }),
+      );
 
       const result = await leagueService.getEntriesByPuuid(puuid);
-      
+
       expect(result.isRight()).toBe(true);
       if (result.isRight()) {
         expect(result.value).toHaveLength(4);
-        
-        const ironEntry = result.value.find(entry => entry.tier === 'IRON');
-        const challengerEntry = result.value.find(entry => entry.tier === 'CHALLENGER');
-        
+
+        const ironEntry = result.value.find((entry) => entry.tier === 'IRON');
+        const challengerEntry = result.value.find((entry) => entry.tier === 'CHALLENGER');
+
         expect(ironEntry).toBeDefined();
         expect(challengerEntry).toBeDefined();
-        
+
         expect(ironEntry?.rank).toBe('IV');
         expect(challengerEntry?.rank).toBe(''); // Challenger has no rank
         expect(ironEntry?.leaguePoints).toBe(0);
@@ -350,19 +362,21 @@ describe('LeagueService', () => {
         queueType: 'RANKED_SOLO_5x5',
       });
 
-      mockHttpClient.get.mockResolvedValue(right({
-        data: mockLeagueEntries,
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-      }));
+      mockHttpClient.get.mockResolvedValue(
+        right({
+          data: mockLeagueEntries,
+          status: 200,
+          statusText: 'OK',
+          headers: {},
+        }),
+      );
 
       const result = await leagueService.getEntriesByPuuid(puuid);
-      
+
       expect(result.isRight()).toBe(true);
       if (result.isRight()) {
         expect(result.value).toHaveLength(5);
-        result.value.forEach(entry => {
+        result.value.forEach((entry) => {
           expect(entry.tier).toBe('GOLD');
           expect(entry.queueType).toBe('RANKED_SOLO_5x5');
         });

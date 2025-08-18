@@ -18,7 +18,7 @@ describe('League Service E2E', () => {
       apiKey: process.env.RIOT_API_KEY!,
       platform: PLATFORMS.BR1,
     });
-    
+
     console.log('🚀 Samira initialized with config:', samira.getConfig());
 
     samira.usePlatformRouting();
@@ -27,14 +27,14 @@ describe('League Service E2E', () => {
   // Rate limiting helper function
   const waitForRateLimit = async () => {
     const status = samira.getHttpClient().getRateLimitStatus();
-    
+
     if (!status.canMakeRequest) {
       const delay = status.delayUntilNext;
-      await new Promise(resolve => setTimeout(resolve, delay + 100));
+      await new Promise((resolve) => setTimeout(resolve, delay + 100));
     }
-    
+
     if (status.requestsInWindow >= 80) {
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
     }
   };
 
@@ -45,7 +45,8 @@ describe('League Service E2E', () => {
 
   describe('getEntriesByPuuid', () => {
     it('should fetch league entries by PUUID successfully', async () => {
-      const puuid = 'ZrXebR0htvpXhiz8D75UGNtYhcCNRqXIAO4kGieSfwJbihV1PKTjTd2sP1CsgqClaL-vw812L7h7iQ';
+      const puuid =
+        'ZrXebR0htvpXhiz8D75UGNtYhcCNRqXIAO4kGieSfwJbihV1PKTjTd2sP1CsgqClaL-vw812L7h7iQ';
 
       const result = await samira.league.getEntriesByPuuid(puuid);
 
@@ -58,7 +59,8 @@ describe('League Service E2E', () => {
     });
 
     it('should handle invalid PUUID gracefully', async () => {
-      const invalidPUUID = 'ZrXebR0htvpXhiz8D75UGNtYhcCNRqXIAO4kGieSfwJbihV1PKTjTd2sP1CsgqClaL-vw812L7h7ix';
+      const invalidPUUID =
+        'ZrXebR0htvpXhiz8D75UGNtYhcCNRqXIAO4kGieSfwJbihV1PKTjTd2sP1CsgqClaL-vw812L7h7ix';
 
       const result = await samira.league.getEntriesByPuuid(invalidPUUID);
 
@@ -72,7 +74,8 @@ describe('League Service E2E', () => {
 
   describe('API response validation', () => {
     it('should return properly formatted league entries data', async () => {
-      const puuid = 'ZrXebR0htvpXhiz8D75UGNtYhcCNRqXIAO4kGieSfwJbihV1PKTjTd2sP1CsgqClaL-vw812L7h7iQ';
+      const puuid =
+        'ZrXebR0htvpXhiz8D75UGNtYhcCNRqXIAO4kGieSfwJbihV1PKTjTd2sP1CsgqClaL-vw812L7h7iQ';
 
       const result = await samira.league.getEntriesByPuuid(puuid);
 
@@ -92,7 +95,7 @@ describe('League Service E2E', () => {
         expect(entries[0]).toHaveProperty('veteran');
         expect(entries[0]).toHaveProperty('freshBlood');
         expect(entries[0]).toHaveProperty('inactive');
-        
+
         // Validate data types
         expect(typeof entries[0].puuid).toBe('string');
         expect(typeof entries[0].queueType).toBe('string');
@@ -105,7 +108,7 @@ describe('League Service E2E', () => {
         expect(typeof entries[0].veteran).toBe('boolean');
         expect(typeof entries[0].freshBlood).toBe('boolean');
         expect(typeof entries[0].inactive).toBe('boolean');
-        
+
         // Validate data content
         expect(entries[0].puuid.length).toBeGreaterThan(0);
         expect(entries[0].queueType.length).toBeGreaterThan(0);
@@ -135,9 +138,11 @@ describe('League Service E2E', () => {
         apiKey: process.env.RIOT_API_KEY!,
         platform: 'invalid-platform',
       });
-      
-      const result = await invalidSamira.league.getEntriesByPuuid('ZrXebR0htvpXhiz8D75UGNtYhcCNRqXIAO4kGieSfwJbihV1PKTjTd2sP1CsgqClaL-vw812L7h7iQ');
-      
+
+      const result = await invalidSamira.league.getEntriesByPuuid(
+        'ZrXebR0htvpXhiz8D75UGNtYhcCNRqXIAO4kGieSfwJbihV1PKTjTd2sP1CsgqClaL-vw812L7h7iQ',
+      );
+
       expect(result.isLeft()).toBe(true);
       if (result.isLeft()) {
         expect(result.value.message).toContain('No response received from server');
@@ -150,12 +155,14 @@ describe('League Service E2E', () => {
         apiKey: 'invalid-api-key',
         platform: PLATFORMS.BR1,
       });
-      
+
       // Use regional routing for account endpoints
       invalidSamira.useRegionalRouting();
-      
-      const result = await invalidSamira.league.getEntriesByPuuid('ZrXebR0htvpXhiz8D75UGNtYhcCNRqXIAO4kGieSfwJbihV1PKTjTd2sP1CsgqClaL-vw812L7h7ix');
-      
+
+      const result = await invalidSamira.league.getEntriesByPuuid(
+        'ZrXebR0htvpXhiz8D75UGNtYhcCNRqXIAO4kGieSfwJbihV1PKTjTd2sP1CsgqClaL-vw812L7h7ix',
+      );
+
       expect(result.isLeft()).toBe(true);
       if (result.isLeft()) {
         console.log(result.value);

@@ -92,7 +92,10 @@ export function makeLeagueEntry(options: MakeLeagueEntryOptions = {}): LeagueEnt
   return baseEntry;
 }
 
-export function makeLeagueEntries(count: number, options: MakeLeagueEntryOptions = {}): LeagueEntry[] {
+export function makeLeagueEntries(
+  count: number,
+  options: MakeLeagueEntryOptions = {},
+): LeagueEntry[] {
   return Array.from({ length: count }, () => makeLeagueEntry(options));
 }
 

@@ -21,7 +21,7 @@ export interface SamiraConfig {
 export class Samira {
   private config: SamiraConfig;
   private httpClient: HttpClient;
-  
+
   // Services
   public account: AccountService;
   public match: MatchService;
@@ -32,7 +32,7 @@ export class Samira {
 
   constructor(config: SamiraConfig) {
     this.config = config;
-    
+
     // Validate API key
     if (!config.apiKey || config.apiKey.trim() === '') {
       throw new Error('API key is required');
@@ -55,8 +55,9 @@ export class Samira {
     const dataDragonConfig: any = {};
     if (config.dataDragon?.version) dataDragonConfig.version = config.dataDragon.version;
     if (config.dataDragon?.language) dataDragonConfig.language = config.dataDragon.language;
-    if (config.dataDragon?.includeFullUrl !== undefined) dataDragonConfig.includeFullUrl = config.dataDragon.includeFullUrl;
-    
+    if (config.dataDragon?.includeFullUrl !== undefined)
+      dataDragonConfig.includeFullUrl = config.dataDragon.includeFullUrl;
+
     this.dataDragon = new DataDragonService(this.httpClient, dataDragonConfig);
   }
 
@@ -98,9 +99,11 @@ export class Samira {
     // Reinitialize Data Dragon service
     const dataDragonConfig: any = {};
     if (this.config.dataDragon?.version) dataDragonConfig.version = this.config.dataDragon.version;
-    if (this.config.dataDragon?.language) dataDragonConfig.language = this.config.dataDragon.language;
-    if (this.config.dataDragon?.includeFullUrl !== undefined) dataDragonConfig.includeFullUrl = this.config.dataDragon.includeFullUrl;
-    
+    if (this.config.dataDragon?.language)
+      dataDragonConfig.language = this.config.dataDragon.language;
+    if (this.config.dataDragon?.includeFullUrl !== undefined)
+      dataDragonConfig.includeFullUrl = this.config.dataDragon.includeFullUrl;
+
     this.dataDragon = new DataDragonService(this.httpClient, dataDragonConfig);
   }
 
@@ -120,9 +123,11 @@ export class Samira {
     // Reinitialize Data Dragon service
     const dataDragonConfig: any = {};
     if (this.config.dataDragon?.version) dataDragonConfig.version = this.config.dataDragon.version;
-    if (this.config.dataDragon?.language) dataDragonConfig.language = this.config.dataDragon.language;
-    if (this.config.dataDragon?.includeFullUrl !== undefined) dataDragonConfig.includeFullUrl = this.config.dataDragon.includeFullUrl;
-    
+    if (this.config.dataDragon?.language)
+      dataDragonConfig.language = this.config.dataDragon.language;
+    if (this.config.dataDragon?.includeFullUrl !== undefined)
+      dataDragonConfig.includeFullUrl = this.config.dataDragon.includeFullUrl;
+
     this.dataDragon = new DataDragonService(this.httpClient, dataDragonConfig);
   }
 
@@ -140,10 +145,13 @@ export class Samira {
       this.league = new LeagueService(this.httpClient);
       // Reinitialize Data Dragon service
       const dataDragonConfig: any = {};
-      if (this.config.dataDragon?.version) dataDragonConfig.version = this.config.dataDragon.version;
-      if (this.config.dataDragon?.language) dataDragonConfig.language = this.config.dataDragon.language;
-      if (this.config.dataDragon?.includeFullUrl !== undefined) dataDragonConfig.includeFullUrl = this.config.dataDragon.includeFullUrl;
-      
+      if (this.config.dataDragon?.version)
+        dataDragonConfig.version = this.config.dataDragon.version;
+      if (this.config.dataDragon?.language)
+        dataDragonConfig.language = this.config.dataDragon.language;
+      if (this.config.dataDragon?.includeFullUrl !== undefined)
+        dataDragonConfig.includeFullUrl = this.config.dataDragon.includeFullUrl;
+
       this.dataDragon = new DataDragonService(this.httpClient, dataDragonConfig);
     }
   }
@@ -162,10 +170,13 @@ export class Samira {
       this.league = new LeagueService(this.httpClient);
       // Reinitialize Data Dragon service
       const dataDragonConfig: any = {};
-      if (this.config.dataDragon?.version) dataDragonConfig.version = this.config.dataDragon.version;
-      if (this.config.dataDragon?.language) dataDragonConfig.language = this.config.dataDragon.language;
-      if (this.config.dataDragon?.includeFullUrl !== undefined) dataDragonConfig.includeFullUrl = this.config.dataDragon.includeFullUrl;
-      
+      if (this.config.dataDragon?.version)
+        dataDragonConfig.version = this.config.dataDragon.version;
+      if (this.config.dataDragon?.language)
+        dataDragonConfig.language = this.config.dataDragon.language;
+      if (this.config.dataDragon?.includeFullUrl !== undefined)
+        dataDragonConfig.includeFullUrl = this.config.dataDragon.includeFullUrl;
+
       this.dataDragon = new DataDragonService(this.httpClient, dataDragonConfig);
     }
   }
@@ -237,8 +248,6 @@ export class Samira {
 
     return platformToRegion[platform] || REGIONS.AMERICAS;
   }
-
-
 }
 
 /**

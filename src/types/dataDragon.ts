@@ -28,16 +28,18 @@ export const ChampionPassiveSchema = z.object({
   image: ChampionImageSchema,
 });
 
-export const ChampionAssetSchema = z.object({
-  id: z.string(),
-  key: z.string(),
-  name: z.string(),
-  title: z.string(),
-  image: ChampionImageSchema,
-  skins: z.array(ChampionSkinSchema).optional(),
-  spells: z.array(ChampionSpellSchema).optional(),
-  passive: ChampionPassiveSchema.optional(),
-}).passthrough(); // Allow additional fields from API
+export const ChampionAssetSchema = z
+  .object({
+    id: z.string(),
+    key: z.string(),
+    name: z.string(),
+    title: z.string(),
+    image: ChampionImageSchema,
+    skins: z.array(ChampionSkinSchema).optional(),
+    spells: z.array(ChampionSpellSchema).optional(),
+    passive: ChampionPassiveSchema.optional(),
+  })
+  .passthrough(); // Allow additional fields from API
 
 // Item schemas
 export const ItemGoldSchema = z.object({
@@ -46,13 +48,15 @@ export const ItemGoldSchema = z.object({
   sell: z.number(),
 });
 
-export const ItemAssetSchema = z.object({
-  name: z.string(),
-  description: z.string(),
-  image: ChampionImageSchema, // Reuse champion image schema
-  gold: ItemGoldSchema,
-  tags: z.array(z.string()),
-}).passthrough(); // Allow additional fields from API
+export const ItemAssetSchema = z
+  .object({
+    name: z.string(),
+    description: z.string(),
+    image: ChampionImageSchema, // Reuse champion image schema
+    gold: ItemGoldSchema,
+    tags: z.array(z.string()),
+  })
+  .passthrough(); // Allow additional fields from API
 
 // Rune schemas
 export const RuneSchema = z.object({
@@ -68,24 +72,28 @@ export const RuneSlotSchema = z.object({
   runes: z.array(RuneSchema),
 });
 
-export const RuneAssetSchema = z.object({
-  id: z.number(),
-  key: z.string(),
-  name: z.string(),
-  icon: z.string(),
-  slots: z.array(RuneSlotSchema),
-}).passthrough(); // Allow additional fields from API
+export const RuneAssetSchema = z
+  .object({
+    id: z.number(),
+    key: z.string(),
+    name: z.string(),
+    icon: z.string(),
+    slots: z.array(RuneSlotSchema),
+  })
+  .passthrough(); // Allow additional fields from API
 
 // Summoner spell schemas
-export const SummonerSpellAssetSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  description: z.string(),
-  tooltip: z.string(),
-  image: ChampionImageSchema, // Reuse champion image schema
-  cooldown: z.array(z.number()),
-  cost: z.array(z.number()),
-}).passthrough(); // Allow additional fields from API
+export const SummonerSpellAssetSchema = z
+  .object({
+    id: z.string(),
+    name: z.string(),
+    description: z.string(),
+    tooltip: z.string(),
+    image: ChampionImageSchema, // Reuse champion image schema
+    cooldown: z.array(z.number()),
+    cost: z.array(z.number()),
+  })
+  .passthrough(); // Allow additional fields from API
 
 // Data Dragon configuration schema
 export const DataDragonConfigSchema = z.object({
