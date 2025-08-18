@@ -63,9 +63,6 @@ const account = await samira.account.getAccountByPuuid('puuid-here');
 ```typescript
 // Get summoner by PUUID
 const summoner = await samira.summoner.getSummonerByPuuid('puuid-here');
-
-// Get summoner by name
-const summoner = await samira.summoner.getSummonerByName('summoner-name');
 ```
 
 ### Match Service
@@ -152,7 +149,7 @@ You can control whether the service returns full URLs or just asset paths:
 const samira = new Samira({
   apiKey: 'your-key',
   dataDragon: {
-    includeFullUrl: true, // Returns: https://ddragon.leagueoflegends.com/cdn/13.1.1/img/champion/Aatrox.jpg
+    includeFullUrl: true, // Returns: https://ddragon.leagueoflegends.com/cdn/13.1.1/img/champion/Aatrox.png
   },
 });
 
@@ -160,7 +157,7 @@ const samira = new Samira({
 const samira = new Samira({
   apiKey: 'your-key',
   dataDragon: {
-    includeFullUrl: false, // Returns: img/champion/Aatrox.jpg
+    includeFullUrl: false, // Returns: img/champion/Aatrox.png
   },
 });
 
