@@ -22,14 +22,15 @@ describe('DataDragonService', () => {
     // Mock the HttpClient constructor to return our mock
     (HttpClient as any).mockImplementation(() => mockHttpClient);
     
-    // Create the service with the mocked client
-    dataDragonService = new DataDragonService(mockHttpClient);
+    // Create the service with the mocked client and a specific version to avoid version fetching
+    dataDragonService = new DataDragonService(mockHttpClient, { version: '13.1.1' });
   });
 
   describe('constructor', () => {
     it('should create DataDragonService instance with default config', () => {
-      expect(dataDragonService).toBeInstanceOf(DataDragonService);
-      expect(dataDragonService.getConfig()).toEqual({
+      const defaultService = new DataDragonService(mockHttpClient);
+      expect(defaultService).toBeInstanceOf(DataDragonService);
+      expect(defaultService.getConfig()).toEqual({
         version: 'latest',
         language: 'en_US',
         baseUrl: 'https://ddragon.leagueoflegends.com',
@@ -69,6 +70,29 @@ describe('DataDragonService', () => {
       if (result.isRight()) {
         expect(result.value).toEqual(mockVersions);
       }
+    });
+  });
+
+  describe('latest version initialization', () => {
+    it('should handle latest version initialization correctly', async () => {
+      const latestService = new DataDragonService(mockHttpClient, { version: 'latest' });
+      
+      // Mock the version fetching
+      const mockVersions = ['13.1.1', '13.1.2', '13.2.1'];
+      mockHttpClient.get.mockResolvedValue(right({ 
+        data: mockVersions, 
+        status: 200, 
+        statusText: 'OK', 
+        headers: {} 
+      }));
+
+      // This should trigger version fetching
+      const result = await latestService.getChampion('Aatrox');
+      
+      // The service should now have fetched the latest version
+      expect(mockHttpClient.get).toHaveBeenCalledWith(
+        'https://ddragon.leagueoflegends.com/api/versions.json'
+      );
     });
   });
 

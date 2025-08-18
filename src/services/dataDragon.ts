@@ -20,6 +20,7 @@ export class DataDragonService {
   private baseUrl: string;
   private version: string;
   private language: string;
+  private isVersionFetched: boolean = false;
 
   constructor(client: HttpClient, config: DataDragonConfig = {}) {
     this.client = client;
@@ -31,8 +32,53 @@ export class DataDragonService {
     };
     
     this.baseUrl = this.config.baseUrl!;
-    this.version = this.config.version!;
     this.language = this.config.language!;
+    
+    // Set initial version - will be updated if 'latest' is specified
+    if (this.config.version === 'latest') {
+      this.version = 'latest'; // Will be fetched on first use
+    } else {
+      this.version = this.config.version!;
+    }
+  }
+
+  /**
+   * Ensure the service is ready with the correct version
+   */
+  private async ensureVersionReady(): Promise<void> {
+    // If version is 'latest' and we haven't fetched it yet, fetch it now
+    if (this.config.version === 'latest' && !this.isVersionFetched) {
+      await this.fetchAndSetLatestVersion();
+    }
+  }
+
+  /**
+   * Fetch and set the latest Data Dragon version
+   */
+  private async fetchAndSetLatestVersion(): Promise<void> {
+    try {
+      const versionsResult = await this.getLatestVersion();
+      if (versionsResult.isRight()) {
+        const versions = versionsResult.value;
+        if (versions.length > 0) {
+          const latestVersion = versions[0];
+          if (latestVersion) {
+            this.version = latestVersion;
+            this.isVersionFetched = true;
+            console.log(`🔄 Data Dragon service using latest version: ${this.version}`);
+          } else {
+            throw new Error('No valid version found in versions array');
+          }
+        } else {
+          throw new Error('No versions available from Data Dragon API');
+        }
+      } else {
+        throw new Error(`Failed to fetch latest version: ${versionsResult.value.message}`);
+      }
+    } catch (error) {
+      console.error('❌ Error fetching latest version:', error);
+      throw new Error(`Failed to initialize Data Dragon service: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   }
 
   /**
@@ -79,6 +125,9 @@ export class DataDragonService {
    * Get specific champion data
    */
   async getChampion(championId: string, version?: string): Promise<Either<ApiError, ChampionAsset>> {
+    // Ensure version is ready if using 'latest'
+    await this.ensureVersionReady();
+    
     const ver = version || this.version;
     const url = `${this.baseUrl}/cdn/${ver}/data/${this.language}/champion/${championId}.json`;
     const response = await this.client.get<{ data: Record<string, ChampionAsset> }>(url);
@@ -126,6 +175,9 @@ export class DataDragonService {
    * Get all items data
    */
   async getItems(version?: string): Promise<Either<ApiError, Record<string, ItemAsset>>> {
+    // Ensure version is ready if using 'latest'
+    await this.ensureVersionReady();
+    
     const ver = version || this.version;
     const url = `${this.baseUrl}/cdn/${ver}/data/${this.language}/item.json`;
     const response = await this.client.get<{ data: Record<string, ItemAsset> }>(url);
@@ -152,6 +204,9 @@ export class DataDragonService {
    * Get specific item data
    */
   async getItem(itemId: string, version?: string): Promise<Either<ApiError, ItemAsset>> {
+    // Ensure version is ready if using 'latest'
+    await this.ensureVersionReady();
+    
     const ver = version || this.version;
     const url = `${this.baseUrl}/cdn/${ver}/data/${this.language}/item.json`;
     const response = await this.client.get<{ data: Record<string, ItemAsset> }>(url);
@@ -187,6 +242,9 @@ export class DataDragonService {
    * Get runes data
    */
   async getRunes(version?: string): Promise<Either<ApiError, RuneAsset[]>> {
+    // Ensure version is ready if using 'latest'
+    await this.ensureVersionReady();
+    
     const ver = version || this.version;
     const url = `${this.baseUrl}/cdn/${ver}/data/${this.language}/runesReforged.json`;
     const response = await this.client.get<RuneAsset[]>(url);
@@ -213,6 +271,9 @@ export class DataDragonService {
    * Get summoner spells data
    */
   async getSummonerSpells(version?: string): Promise<Either<ApiError, Record<string, SummonerSpellAsset>>> {
+    // Ensure version is ready if using 'latest'
+    await this.ensureVersionReady();
+    
     const ver = version || this.version;
     const url = `${this.baseUrl}/cdn/${ver}/data/${this.language}/summoner.json`;
     const response = await this.client.get<{ data: Record<string, SummonerSpellAsset> }>(url);
@@ -314,10 +375,18 @@ export class DataDragonService {
    * Update configuration
    */
   updateConfig(config: Partial<DataDragonConfig>): void {
+    const oldVersion = this.config.version;
     this.config = { ...this.config, ...config };
     this.baseUrl = this.config.baseUrl || 'https://ddragon.leagueoflegends.com';
-    this.version = this.config.version || 'latest';
     this.language = this.config.language || 'en_US';
+    
+    // If version changed to 'latest', reset the fetched state
+    if (this.config.version === 'latest' && oldVersion !== 'latest') {
+      this.isVersionFetched = false;
+    } else if (this.config.version !== 'latest') {
+      this.version = this.config.version!;
+      this.isVersionFetched = true; // Mark as fetched since we're using a specific version
+    }
   }
 
   /**
