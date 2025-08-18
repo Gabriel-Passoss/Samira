@@ -1,0 +1,28 @@
+# Source files
+src/
+tests/
+examples/
+
+# Configuration files
+tsconfig.json
+vitest.config.ts
+vitest.e2e.config.ts
+.env
+.env.example
+
+# Development files
+.git/
+.github/
+.vscode/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build artifacts (keep dist/ but exclude source maps for production)
+dist/**/*.map
+
+# Documentation
+README.md
+CHANGELOG.md
+LICENSE

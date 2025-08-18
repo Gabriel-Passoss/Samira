@@ -1,13 +1,25 @@
 {
   "name": "samira",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A TypeScript library for League of Legends API calls",
   "main": "dist/index.js",
+  "module": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist/**/*"
+  ],
   "scripts": {
     "build": "tsc",
     "dev": "ts-node src/index.ts",
     "clean": "rm -rf dist",
+    "prepublishOnly": "npm run clean && npm run build",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:run": "vitest run",
