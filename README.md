@@ -1,4 +1,6 @@
-# Samira - League of Legends API Library
+# Samira - League of Legends API Library 
+
+[![](https://img.shields.io/npm/v/samira.svg)](https://www.npmjs.com/package/samira)
 
 A TypeScript library for League of Legends API calls with built-in rate limiting, error handling, and type safety.
 
