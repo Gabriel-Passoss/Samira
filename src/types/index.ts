@@ -374,3 +374,6 @@ export type ChampionMastery = z.infer<typeof ChampionMasterySchema>;
 export type CurrentGame = z.infer<typeof CurrentGameSchema>;
 export type FeaturedGames = z.infer<typeof FeaturedGamesSchema>;
 export type BaseApiResponse = z.infer<typeof BaseApiResponse>;
+
+// Data Dragon types and schemas
+export * from './dataDragon';
