@@ -5,6 +5,7 @@ import { MatchService } from './services/match';
 import { SpectatorService } from './services/spectator';
 import { SummonerService } from './services/summoner';
 import { DataDragonService } from './services/dataDragon';
+import { LeagueService } from './services/league';
 
 export interface SamiraConfig {
   apiKey: string;
@@ -27,6 +28,7 @@ export class Samira {
   public spectator: SpectatorService;
   public summoner: SummonerService;
   public dataDragon: DataDragonService;
+  public league: LeagueService;
 
   constructor(config: SamiraConfig) {
     this.config = config;
@@ -48,7 +50,7 @@ export class Samira {
     this.match = new MatchService(this.httpClient);
     this.spectator = new SpectatorService(this.httpClient);
     this.summoner = new SummonerService(this.httpClient);
-    
+    this.league = new LeagueService(this.httpClient);
     // Initialize Data Dragon service
     const dataDragonConfig: any = {};
     if (config.dataDragon?.version) dataDragonConfig.version = config.dataDragon.version;
@@ -92,7 +94,7 @@ export class Samira {
     this.match = new MatchService(this.httpClient);
     this.spectator = new SpectatorService(this.httpClient);
     this.summoner = new SummonerService(this.httpClient);
-    
+    this.league = new LeagueService(this.httpClient);
     // Reinitialize Data Dragon service
     const dataDragonConfig: any = {};
     if (this.config.dataDragon?.version) dataDragonConfig.version = this.config.dataDragon.version;
@@ -114,7 +116,7 @@ export class Samira {
     this.match = new MatchService(this.httpClient);
     this.spectator = new SpectatorService(this.httpClient);
     this.summoner = new SummonerService(this.httpClient);
-    
+    this.league = new LeagueService(this.httpClient);
     // Reinitialize Data Dragon service
     const dataDragonConfig: any = {};
     if (this.config.dataDragon?.version) dataDragonConfig.version = this.config.dataDragon.version;
@@ -135,7 +137,7 @@ export class Samira {
       this.match = new MatchService(this.httpClient);
       this.spectator = new SpectatorService(this.httpClient);
       this.summoner = new SummonerService(this.httpClient);
-      
+      this.league = new LeagueService(this.httpClient);
       // Reinitialize Data Dragon service
       const dataDragonConfig: any = {};
       if (this.config.dataDragon?.version) dataDragonConfig.version = this.config.dataDragon.version;
@@ -157,7 +159,7 @@ export class Samira {
       this.match = new MatchService(this.httpClient);
       this.spectator = new SpectatorService(this.httpClient);
       this.summoner = new SummonerService(this.httpClient);
-      
+      this.league = new LeagueService(this.httpClient);
       // Reinitialize Data Dragon service
       const dataDragonConfig: any = {};
       if (this.config.dataDragon?.version) dataDragonConfig.version = this.config.dataDragon.version;

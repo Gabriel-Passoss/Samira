@@ -324,8 +324,7 @@ describe('Zod Schemas', () => {
     it('should validate valid league entry data', () => {
       const validLeagueEntry = {
         leagueId: 'league-id-123',
-        summonerId: 'encrypted-summoner-id',
-        summonerName: 'TestSummoner',
+        puuid: 'encrypted-puuid',
         queueType: 'RANKED_SOLO_5x5',
         tier: 'GOLD',
         rank: 'II',
@@ -347,8 +346,7 @@ describe('Zod Schemas', () => {
     it('should validate league entry with mini series', () => {
       const validLeagueEntryWithSeries = {
         leagueId: 'league-id-123',
-        summonerId: 'encrypted-summoner-id',
-        summonerName: 'TestSummoner',
+        puuid: 'encrypted-puuid',
         queueType: 'RANKED_SOLO_5x5',
         tier: 'SILVER',
         rank: 'I',

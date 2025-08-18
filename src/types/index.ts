@@ -247,8 +247,7 @@ export const MatchSchema = z.object({
 // League schemas
 export const LeagueEntrySchema = z.object({
   leagueId: z.string(),
-  summonerId: z.string(),
-  summonerName: z.string(),
+  puuid: z.string(),
   queueType: z.string(),
   tier: z.string(),
   rank: z.string(),

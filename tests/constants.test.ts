@@ -81,7 +81,7 @@ describe('Constants', () => {
     });
 
     it('should have league endpoints', () => {
-      expect(ENDPOINTS).toHaveProperty('LEAGUE_ENTRIES_BY_SUMMONER');
+      expect(ENDPOINTS).toHaveProperty('LEAGUE_ENTRIES_BY_PUUID');
     });
 
     it('should have account endpoints', () => {

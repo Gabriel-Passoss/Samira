@@ -51,7 +51,7 @@ export const ENDPOINTS = {
   MATCHES_BY_PUUID: '/lol/match/v5/matches/by-puuid/{puuid}/ids',
   
   // League endpoints
-  LEAGUE_ENTRIES_BY_SUMMONER: '/lol/league/v4/entries/by-summoner/{encryptedSummonerId}',
+  LEAGUE_ENTRIES_BY_PUUID: '/lol/league/v4/entries/by-puuid/{encryptedPUUID}',
   
   // Account endpoints
   ACCOUNT_BY_PUUID: '/riot/account/v1/accounts/by-puuid/{puuid}',
