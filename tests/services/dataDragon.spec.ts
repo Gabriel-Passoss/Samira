@@ -303,7 +303,7 @@ describe('DataDragonService', () => {
     it('should return asset path when includeFullUrl is false', () => {
       const service = new DataDragonService(mockHttpClient, { includeFullUrl: false });
       
-      expect(service.getChampionImageUrl('Aatrox')).toBe('img/champion/Aatrox.jpg');
+      expect(service.getChampionImageUrl('Aatrox')).toBe('img/champion/Aatrox.png');
       expect(service.getItemImageUrl('1001')).toBe('img/item/1001.png');
       expect(service.getProfileIconUrl(1)).toBe('img/profileicon/1.png');
     });
@@ -314,7 +314,7 @@ describe('DataDragonService', () => {
         version: '13.1.1'
       });
       
-      expect(service.getChampionImageUrl('Aatrox')).toBe('https://ddragon.leagueoflegends.com/cdn/13.1.1/img/champion/Aatrox.jpg');
+      expect(service.getChampionImageUrl('Aatrox')).toBe('https://ddragon.leagueoflegends.com/cdn/13.1.1/img/champion/Aatrox.png');
       expect(service.getItemImageUrl('1001')).toBe('https://ddragon.leagueoflegends.com/cdn/13.1.1/img/item/1001.png');
       expect(service.getProfileIconUrl(1)).toBe('https://ddragon.leagueoflegends.com/cdn/13.1.1/img/profileicon/1.png');
     });
@@ -322,23 +322,23 @@ describe('DataDragonService', () => {
     it('should handle champion skins correctly', () => {
       const service = new DataDragonService(mockHttpClient, { includeFullUrl: false });
       
-      expect(service.getChampionImageUrl('Aatrox')).toBe('img/champion/Aatrox.jpg');
-      expect(service.getChampionImageUrl('Aatrox', '0')).toBe('img/champion/Aatrox.jpg');
-      expect(service.getChampionImageUrl('Aatrox', '1')).toBe('img/champion/Aatrox_1.jpg');
+      expect(service.getChampionImageUrl('Aatrox')).toBe('img/champion/Aatrox.png');
+      expect(service.getChampionImageUrl('Aatrox', '0')).toBe('img/champion/Aatrox.png');
+      expect(service.getChampionImageUrl('Aatrox', '1')).toBe('img/champion/Aatrox_1.png');
     });
 
     it('should handle champion splash art correctly', () => {
       const service = new DataDragonService(mockHttpClient, { includeFullUrl: false });
       
-      expect(service.getChampionSplashUrl('Aatrox')).toBe('img/champion/splash/Aatrox.jpg');
-      expect(service.getChampionSplashUrl('Aatrox', '1')).toBe('img/champion/splash/Aatrox_1.jpg');
+      expect(service.getChampionSplashUrl('Aatrox')).toBe('img/champion/splash/Aatrox.png');
+      expect(service.getChampionSplashUrl('Aatrox', '1')).toBe('img/champion/splash/Aatrox_1.png');
     });
 
     it('should handle champion loading screen correctly', () => {
       const service = new DataDragonService(mockHttpClient, { includeFullUrl: false });
       
-      expect(service.getChampionLoadingUrl('Aatrox')).toBe('img/champion/loading/Aatrox.jpg');
-      expect(service.getChampionLoadingUrl('Aatrox', '1')).toBe('img/champion/loading/Aatrox_1.jpg');
+      expect(service.getChampionLoadingUrl('Aatrox')).toBe('https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Aatrox_0.jpg');
+      expect(service.getChampionLoadingUrl('Aatrox', '1')).toBe('https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Aatrox_1.jpg');
     });
   });
 

@@ -311,8 +311,8 @@ export class DataDragonService {
    */
   getChampionImageUrl(championId: string, skinId?: string): string {
     const imagePath = skinId 
-      ? `img/champion/${championId}${skinId === '0' ? '' : `_${skinId}`}.jpg`
-      : `img/champion/${championId}.jpg`;
+      ? `img/champion/${championId}${skinId === '0' ? '' : `_${skinId}`}.png`
+      : `img/champion/${championId}.png`;
     
     return this.getAssetUrl(imagePath);
   }
@@ -354,8 +354,8 @@ export class DataDragonService {
    */
   getChampionSplashUrl(championId: string, skinId?: string): string {
     const imagePath = skinId 
-      ? `img/champion/splash/${championId}${skinId === '0' ? '' : `_${skinId}`}.jpg`
-      : `img/champion/splash/${championId}.jpg`;
+      ? `img/champion/splash/${championId}${skinId === '0' ? '_0' : `_${skinId}`}.png`
+      : `img/champion/splash/${championId}.png`;
     
     return this.getAssetUrl(imagePath);
   }
@@ -364,11 +364,12 @@ export class DataDragonService {
    * Get champion loading screen URL
    */
   getChampionLoadingUrl(championId: string, skinId?: string): string {
-    const imagePath = skinId 
-      ? `img/champion/loading/${championId}${skinId === '0' ? '' : `_${skinId}`}.jpg`
-      : `img/champion/loading/${championId}.jpg`;
+    const imageUrl = skinId 
+      ? `https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${championId}${skinId === '0' && skinId !== undefined ? '_0' : `_${skinId}`}.jpg`
+      : `https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${championId}_0.jpg`;
+
     
-    return this.getAssetUrl(imagePath);
+    return imageUrl;
   }
 
   /**

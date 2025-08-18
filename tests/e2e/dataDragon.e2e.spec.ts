@@ -209,7 +209,7 @@ describe('Data Dragon Service E2E', () => {
       expect(config.includeFullUrl).toBe(true);
       
       const championImageUrl = samira.dataDragon.getChampionImageUrl('Aatrox');
-      expect(championImageUrl).toMatch(/^https:\/\/ddragon\.leagueoflegends\.com\/cdn\/.*\/img\/champion\/Aatrox\.jpg$/);
+      expect(championImageUrl).toMatch(/^https:\/\/ddragon\.leagueoflegends\.com\/cdn\/.*\/img\/champion\/Aatrox\.png$/);
       
       const itemImageUrl = samira.dataDragon.getItemImageUrl('1001');
       expect(itemImageUrl).toMatch(/^https:\/\/ddragon\.leagueoflegends\.com\/cdn\/.*\/img\/item\/1001\.png$/);
@@ -223,15 +223,23 @@ describe('Data Dragon Service E2E', () => {
       const skinImageUrl = samira.dataDragon.getChampionImageUrl('Aatrox', '1');
       
       expect(baseImageUrl).not.toBe(skinImageUrl);
-      expect(skinImageUrl).toContain('Aatrox_1.jpg');
+      expect(skinImageUrl).toContain('Aatrox_1.png');
     });
 
     it('should handle champion splash art correctly', () => {
       const splashUrl = samira.dataDragon.getChampionSplashUrl('Aatrox');
-      expect(splashUrl).toContain('img/champion/splash/Aatrox.jpg');
+      expect(splashUrl).toContain('img/champion/splash/Aatrox.png');
       
       const skinSplashUrl = samira.dataDragon.getChampionSplashUrl('Aatrox', '1');
-      expect(skinSplashUrl).toContain('img/champion/splash/Aatrox_1.jpg');
+      expect(skinSplashUrl).toContain('img/champion/splash/Aatrox_1.png');
+    });
+
+    it('should handle champion splash art correctly', () => {
+      const loadingUrl = samira.dataDragon.getChampionLoadingUrl('Aatrox');
+      expect(loadingUrl).toContain('https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Aatrox_0.jpg');
+      
+      const skinLoadingUrl = samira.dataDragon.getChampionLoadingUrl('Aatrox', '1');
+      expect(skinLoadingUrl).toContain('https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Aatrox_1.jpg');
     });
   });
 
@@ -251,7 +259,7 @@ describe('Data Dragon Service E2E', () => {
       
       // Test that asset URLs now return paths instead of full URLs
       const championImageUrl = samira.dataDragon.getChampionImageUrl('Aatrox');
-      expect(championImageUrl).toBe('img/champion/Aatrox.jpg');
+      expect(championImageUrl).toBe('img/champion/Aatrox.png');
       
       // Restore original config
       samira.dataDragon.updateConfig(originalConfig);
