@@ -12,7 +12,7 @@ export const ItemAssetSchema = z.object({
   name: z.string(),
   description: z.string(),
   plaintext: z.string(),
-  into: z.array(z.string()),
+  into: z.array(z.string()).optional(),
   image: AssetImageSchema,
   gold: ItemGoldSchema,
   tags: z.array(z.string()),

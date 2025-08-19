@@ -1,7 +1,7 @@
 import z from "zod";
-import { ParticipantSchema } from "./participant";
 import { BannedChampionSchema } from "./bannedChampion";
-import { GameCustomizationObjectSchema } from "./gameCustomizationObjectSchema";
+import { GameCustomizationObjectSchema } from "./gameCustomizationObject";
+import { SpectatorParticipantSchema } from "./participant";
 
 export const CurrentGameSchema = z.object({
   gameId: z.number(),
@@ -16,8 +16,8 @@ export const CurrentGameSchema = z.object({
   observers: z.object({
     encryptionKey: z.string(),
   }),
-  participants: z.array(ParticipantSchema),
-  gameCustomizationObjects: z.array(GameCustomizationObjectSchema),
+  participants: z.array(SpectatorParticipantSchema),
+  gameCustomizationObjects: z.array(GameCustomizationObjectSchema).optional(),
 });
 
 export type CurrentGame = z.infer<typeof CurrentGameSchema>;

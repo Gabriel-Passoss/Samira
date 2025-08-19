@@ -6,6 +6,7 @@ export const TierSchema = z.enum([
   'SILVER',
   'GOLD',
   'PLATINUM',
+  'EMERALD',
   'DIAMOND',
   'MASTER',
   'GRANDMASTER',

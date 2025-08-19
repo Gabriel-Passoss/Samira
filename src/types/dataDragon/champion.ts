@@ -48,12 +48,12 @@ export const ChampionSpellSchema = z.object({
     effect: z.array(z.string()),
   }),
   maxrank: z.number(),
-  cooldown: z.array(z.number()),
+  cooldown: z.array(z.number().nullable()),
   cooldownBurn: z.string(),
-  cost: z.array(z.number()),
+  cost: z.array(z.number().nullable()),
   costBurn: z.string(),
-  effect: z.array(z.array(z.string())),
-  effectBurn: z.array(z.string()),
+  effect: z.array(z.array(z.number()).nullable()),
+  effectBurn: z.array(z.string().nullable()),
   costType: z.string(),
   maxammo: z.string(),
   range: z.array(z.number()),
@@ -68,7 +68,7 @@ export const ChampionPassiveSchema = z.object({
   image: AssetImageSchema,
 });
 
-export const ChampionAssetSchema = z.object({
+export const ChampionSchema = z.object({
   id: z.string(),
   key: z.string(),
   name: z.string(),
@@ -92,4 +92,4 @@ export type ChampionStats = z.infer<typeof ChampionStatsSchema>;
 export type ChampionSkin = z.infer<typeof ChampionSkinSchema>;
 export type ChampionSpell = z.infer<typeof ChampionSpellSchema>;
 export type ChampionPassive = z.infer<typeof ChampionPassiveSchema>;
-export type ChampionAsset = z.infer<typeof ChampionAssetSchema>;
+export type Champion = z.infer<typeof ChampionSchema>;

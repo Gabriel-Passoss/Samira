@@ -3,16 +3,17 @@ import { Either, left, right } from '../types/either';
 import { ApiError } from '../utils/httpClient';
 import {
   DataDragonConfig,
-  ChampionAsset,
+  Champion,
   ItemAsset,
   RuneAsset,
   SummonerSpellAsset,
-  ChampionAssetSchema,
+  ChampionSchema,
   ItemAssetSchema,
   RuneAssetSchema,
   SummonerSpellAssetSchema,
 } from '../types';
 import { z } from 'zod';
+import { ChampionsSchema, type Champions } from '../types/dataDragon/champions';
 
 export class DataDragonService {
   private client: HttpClient;
@@ -98,10 +99,10 @@ export class DataDragonService {
   /**
    * Get all champions data
    */
-  async getChampions(version?: string): Promise<Either<ApiError, Record<string, ChampionAsset>>> {
+  async getChampions(version?: string): Promise<Either<ApiError, Record<string, Champions>>> {
     const ver = version || this.version;
     const url = `${this.baseUrl}/cdn/${ver}/data/${this.language}/champion.json`;
-    const response = await this.client.get<{ data: Record<string, ChampionAsset> }>(url);
+    const response = await this.client.get<{ data: Record<string, Champions> }>(url);
     
     if (response.isLeft()) {
       return left(response.value);
@@ -109,7 +110,7 @@ export class DataDragonService {
     
     try {
       // Validate the response data with Zod
-      const champions = z.record(z.string(), ChampionAssetSchema).parse(response.value.data.data);
+      const champions = z.record(z.string(), ChampionsSchema).parse(response.value.data.data);
       return right(champions);
     } catch (error) {
       return left({
@@ -124,13 +125,13 @@ export class DataDragonService {
   /**
    * Get specific champion data
    */
-  async getChampion(championId: string, version?: string): Promise<Either<ApiError, ChampionAsset>> {
+  async getChampion(championId: string, version?: string): Promise<Either<ApiError, Champion>> {
     // Ensure version is ready if using 'latest'
     await this.ensureVersionReady();
     
     const ver = version || this.version;
     const url = `${this.baseUrl}/cdn/${ver}/data/${this.language}/champion/${championId}.json`;
-    const response = await this.client.get<{ data: Record<string, ChampionAsset> }>(url);
+    const response = await this.client.get<{ data: Record<string, Champion> }>(url);
     
     if (response.isLeft()) {
       return left(response.value);
@@ -159,7 +160,7 @@ export class DataDragonService {
       }
       
       // Validate the champion data with Zod
-      const validatedChampion = ChampionAssetSchema.parse(champion);
+      const validatedChampion = ChampionSchema.parse(champion);
       return right(validatedChampion);
     } catch (error) {
       return left({

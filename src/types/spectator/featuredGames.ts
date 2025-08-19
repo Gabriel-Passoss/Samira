@@ -1,5 +1,5 @@
 import z from "zod";
-import { ParticipantSchema } from "./participant";
+import { SpectatorParticipantSchema } from "./participant";
 import { BannedChampionSchema } from "./bannedChampion";
 
 export const FeaturedGameInfoSchema = z.object({
@@ -13,7 +13,7 @@ export const FeaturedGameInfoSchema = z.object({
     encryptionKey: z.string(),
   }),
   gameQueueConfigId: z.number(),
-  participants: z.array(ParticipantSchema),
+  participants: z.array(SpectatorParticipantSchema),
   platformId: z.string(),
 });
 

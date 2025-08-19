@@ -14,7 +14,7 @@ export const ObjectivesSchema = z.object({
   baron: ObjectiveSchema,
   champion: ObjectiveSchema,
   dragon: ObjectiveSchema,
-  horde: ObjectiveSchema,
+  horde: ObjectiveSchema.optional(),
   inhibitor: ObjectiveSchema,
   riftHerald: ObjectiveSchema,
   tower: ObjectiveSchema,

@@ -1,6 +1,7 @@
 import z from "zod";
 
 export const RankSchema = z.enum([
+  '',   // Empty string for Master, Grandmaster, Challenger tiers
   'I',
   'II',
   'III',
