@@ -8,8 +8,8 @@ import {
   GAME_MODES,
   MAP_IDS,
   CHAMPION_TAGS,
-  TIERS,
-  RANKS,
+  TIER_LEVELS,
+  RANK_DIVISIONS,
 } from '../src/constants';
 
 describe('Constants', () => {
@@ -169,33 +169,33 @@ describe('Constants', () => {
 
   describe('TIERS', () => {
     it('should have all ranked tiers', () => {
-      expect(TIERS).toHaveProperty('IRON', 'IRON');
-      expect(TIERS).toHaveProperty('BRONZE', 'BRONZE');
-      expect(TIERS).toHaveProperty('SILVER', 'SILVER');
-      expect(TIERS).toHaveProperty('GOLD', 'GOLD');
-      expect(TIERS).toHaveProperty('PLATINUM', 'PLATINUM');
-      expect(TIERS).toHaveProperty('EMERALD', 'EMERALD');
-      expect(TIERS).toHaveProperty('DIAMOND', 'DIAMOND');
-      expect(TIERS).toHaveProperty('MASTER', 'MASTER');
-      expect(TIERS).toHaveProperty('GRANDMASTER', 'GRANDMASTER');
-      expect(TIERS).toHaveProperty('CHALLENGER', 'CHALLENGER');
+      expect(TIER_LEVELS).toHaveProperty('IRON', 'IRON');
+      expect(TIER_LEVELS).toHaveProperty('BRONZE', 'BRONZE');
+      expect(TIER_LEVELS).toHaveProperty('SILVER', 'SILVER');
+      expect(TIER_LEVELS).toHaveProperty('GOLD', 'GOLD');
+      expect(TIER_LEVELS).toHaveProperty('PLATINUM', 'PLATINUM');
+      expect(TIER_LEVELS).toHaveProperty('EMERALD', 'EMERALD');
+      expect(TIER_LEVELS).toHaveProperty('DIAMOND', 'DIAMOND');
+      expect(TIER_LEVELS).toHaveProperty('MASTER', 'MASTER');
+      expect(TIER_LEVELS).toHaveProperty('GRANDMASTER', 'GRANDMASTER');
+      expect(TIER_LEVELS).toHaveProperty('CHALLENGER', 'CHALLENGER');
     });
 
     it('should have 10 tiers', () => {
-      expect(Object.keys(TIERS)).toHaveLength(10);
+      expect(Object.keys(TIER_LEVELS)).toHaveLength(10);
     });
   });
 
   describe('RANKS', () => {
     it('should have all rank divisions', () => {
-      expect(RANKS).toHaveProperty('I', 'I');
-      expect(RANKS).toHaveProperty('II', 'II');
-      expect(RANKS).toHaveProperty('III', 'III');
-      expect(RANKS).toHaveProperty('IV', 'IV');
+      expect(RANK_DIVISIONS).toHaveProperty('I', 'I');
+      expect(RANK_DIVISIONS).toHaveProperty('II', 'II');
+      expect(RANK_DIVISIONS).toHaveProperty('III', 'III');
+      expect(RANK_DIVISIONS).toHaveProperty('IV', 'IV');
     });
 
     it('should have 4 ranks', () => {
-      expect(Object.keys(RANKS)).toHaveLength(4);
+      expect(Object.keys(RANK_DIVISIONS)).toHaveLength(4);
     });
   });
 });

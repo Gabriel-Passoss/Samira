@@ -101,6 +101,108 @@ const aatrox = await samira.dataDragon.getChampion('Aatrox');
 const items = await samira.dataDragon.getItems();
 
 // Get specific item
+const doransBlade = await samira.dataDragon.getItem(1055);
+```
+
+## Types and Schemas
+
+Samira provides comprehensive TypeScript types and Zod schemas for all API responses. You can import and use these types in your own code:
+
+### Importing All Types
+
+```typescript
+import {
+  // Core types
+  Champion,
+  Summoner,
+  Match,
+  LeagueEntry,
+  Account,
+  CurrentGame,
+  
+  // Zod schemas for validation
+  ChampionSchema,
+  SummonerSchema,
+  MatchSchema,
+  LeagueEntrySchema,
+  AccountSchema,
+  CurrentGameSchema,
+  
+  // Utility types
+  Either,
+  Left,
+  Right,
+  
+  // Constants
+  REGIONS,
+  PLATFORMS,
+  ENDPOINTS,
+} from 'samira';
+```
+
+### Type Categories
+
+#### Data Dragon Types
+- `Champion`, `Champions` - Champion data and lists
+- `ItemAsset`, `RuneAsset`, `SummonerSpellAsset` - Game assets
+- `ChampionInfo`, `ChampionStats`, `ChampionSkin`, `ChampionSpell`, `ChampionPassive`
+
+#### Account & Summoner Types
+- `Account` - Riot account information
+- `Summoner` - Summoner profile data
+- `ChampionMastery` - Champion mastery information
+
+#### League Types
+- `LeagueEntry` - Ranked league information
+- `MiniSeries` - Promotion series data
+- `Rank`, `Tier` - Rank and tier enums
+
+#### Match Types
+- `Match`, `MatchMetadata`, `MatchInfo` - Match data structure
+- `MatchParticipant` - Individual player data
+- `Challenge`, `Mission` - Advanced match statistics
+- `MatchTeam`, `Ban`, `Objective` - Team and objective data
+
+#### Spectator Types
+- `CurrentGame` - Active game information
+- `FeaturedGames` - Featured games list
+- `SpectatorParticipant` - Player data in spectator mode
+
+### Using Zod Schemas for Validation
+
+```typescript
+import { ChampionSchema, MatchSchema } from 'samira';
+
+// Validate API responses at runtime
+const champion = ChampionSchema.parse(apiResponse);
+const match = MatchSchema.parse(matchData);
+
+// Type-safe data with validation
+if (ChampionSchema.safeParse(data).success) {
+  // data is now typed as Champion
+  console.log(data.name);
+}
+```
+
+### Error Handling with Either Types
+
+```typescript
+import { Either, Left, Right } from 'samira';
+
+// Handle API responses with type safety
+const result: Either<Error, Champion> = await getChampionData();
+
+if (result.isRight()) {
+  const champion = result.value; // Type: Champion
+  console.log(champion.name);
+} else {
+  const error = result.value; // Type: Error
+  console.error(error.message);
+}
+```
+const items = await samira.dataDragon.getItems();
+
+// Get specific item
 const boots = await samira.dataDragon.getItem('1001');
 
 // Get runes

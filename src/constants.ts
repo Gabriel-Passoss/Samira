@@ -144,7 +144,7 @@ export const CHAMPION_TAGS = {
 } as const;
 
 // Tier levels
-export const TIERS = {
+export const TIER_LEVELS = {
   IRON: 'IRON',
   BRONZE: 'BRONZE',
   SILVER: 'SILVER',
@@ -158,7 +158,7 @@ export const TIERS = {
 } as const;
 
 // Rank divisions
-export const RANKS = {
+export const RANK_DIVISIONS = {
   I: 'I',
   II: 'II',
   III: 'III',
@@ -172,5 +172,5 @@ export type QueueType = typeof QUEUE_TYPES[keyof typeof QUEUE_TYPES];
 export type GameMode = typeof GAME_MODES[keyof typeof GAME_MODES];
 export type MapId = typeof MAP_IDS[keyof typeof MAP_IDS];
 export type ChampionTag = typeof CHAMPION_TAGS[keyof typeof CHAMPION_TAGS];
-export type Tier = typeof TIERS[keyof typeof TIERS];
-export type Rank = typeof RANKS[keyof typeof RANKS];
+export type TierLevel = typeof TIER_LEVELS[keyof typeof TIER_LEVELS];
+export type RankDivision = typeof RANK_DIVISIONS[keyof typeof RANK_DIVISIONS];
