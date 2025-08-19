@@ -24,20 +24,20 @@ describe('Data Dragon Service E2E', () => {
         includeFullUrl: true,
       },
     });
-    
+
     console.log('🚀 Samira initialized with config:', samira.getConfig());
   });
 
   const waitForRateLimit = async () => {
     const status = samira.getHttpClient().getRateLimitStatus();
-    
+
     if (!status.canMakeRequest) {
       const delay = status.delayUntilNext;
-      await new Promise(resolve => setTimeout(resolve, delay + 100));
+      await new Promise((resolve) => setTimeout(resolve, delay + 100));
     }
-    
+
     if (status.requestsInWindow >= 80) {
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
     }
   };
 
@@ -55,10 +55,10 @@ describe('Data Dragon Service E2E', () => {
         expect(Array.isArray(versions)).toBe(true);
         expect(versions.length).toBeGreaterThan(0);
         expect(typeof versions[0]).toBe('string');
-        
+
         // Version should be in format like "13.1.1"
         expect(versions[0]).toMatch(/^\d+\.\d+\.\d+$/);
-        
+
         console.log('📦 Latest versions:', versions.slice(0, 3));
       }
     });
@@ -72,7 +72,7 @@ describe('Data Dragon Service E2E', () => {
         const champions = result.value;
         expect(typeof champions).toBe('object');
         expect(Object.keys(champions).length).toBeGreaterThan(150); // Should have many champions
-        
+
         // Check a specific champion structure (some fields are optional)
         const firstChampion = Object.values(champions)[0];
         expect(firstChampion).toHaveProperty('id');
@@ -120,7 +120,7 @@ describe('Data Dragon Service E2E', () => {
         const items = result.value;
         expect(typeof items).toBe('object');
         expect(Object.keys(items).length).toBeGreaterThan(200); // Should have many items
-        
+
         // Check a specific item structure
         const firstItem = Object.values(items)[0];
         expect(firstItem).toHaveProperty('name');
@@ -128,7 +128,6 @@ describe('Data Dragon Service E2E', () => {
         expect(firstItem).toHaveProperty('image');
         expect(firstItem).toHaveProperty('gold');
         expect(firstItem).toHaveProperty('tags');
-        
       }
     });
   });
@@ -157,7 +156,7 @@ describe('Data Dragon Service E2E', () => {
         const runes = result.value;
         expect(Array.isArray(runes)).toBe(true);
         expect(runes.length).toBeGreaterThan(0);
-        
+
         // Check rune structure
         const firstRune = runes[0];
         expect(firstRune).toHaveProperty('id');
@@ -178,7 +177,7 @@ describe('Data Dragon Service E2E', () => {
         const spells = result.value;
         expect(typeof spells).toBe('object');
         expect(Object.keys(spells).length).toBeGreaterThan(10); // Should have summoner spells
-        
+
         // Check spell structure
         const firstSpell = Object.values(spells)[0];
         expect(firstSpell).toHaveProperty('id');
@@ -195,21 +194,27 @@ describe('Data Dragon Service E2E', () => {
     it('should return full URLs when includeFullUrl is true', () => {
       const config = samira.dataDragon.getConfig();
       expect(config.includeFullUrl).toBe(true);
-      
+
       const championImageUrl = samira.dataDragon.getChampionImageUrl('Aatrox');
-      expect(championImageUrl).toMatch(/^https:\/\/ddragon\.leagueoflegends\.com\/cdn\/.*\/img\/champion\/Aatrox\.png$/);
-      
+      expect(championImageUrl).toMatch(
+        /^https:\/\/ddragon\.leagueoflegends\.com\/cdn\/.*\/img\/champion\/Aatrox\.png$/,
+      );
+
       const itemImageUrl = samira.dataDragon.getItemImageUrl('1001');
-      expect(itemImageUrl).toMatch(/^https:\/\/ddragon\.leagueoflegends\.com\/cdn\/.*\/img\/item\/1001\.png$/);
-      
+      expect(itemImageUrl).toMatch(
+        /^https:\/\/ddragon\.leagueoflegends\.com\/cdn\/.*\/img\/item\/1001\.png$/,
+      );
+
       const profileIconUrl = samira.dataDragon.getProfileIconUrl(1);
-      expect(profileIconUrl).toMatch(/^https:\/\/ddragon\.leagueoflegends\.com\/cdn\/.*\/img\/profileicon\/1\.png$/);
+      expect(profileIconUrl).toMatch(
+        /^https:\/\/ddragon\.leagueoflegends\.com\/cdn\/.*\/img\/profileicon\/1\.png$/,
+      );
     });
 
     it('should handle champion skins correctly', () => {
       const baseImageUrl = samira.dataDragon.getChampionImageUrl('Aatrox');
       const skinImageUrl = samira.dataDragon.getChampionImageUrl('Aatrox', '1');
-      
+
       expect(baseImageUrl).not.toBe(skinImageUrl);
       expect(skinImageUrl).toContain('Aatrox_1.png');
     });
@@ -217,41 +222,45 @@ describe('Data Dragon Service E2E', () => {
     it('should handle champion splash art correctly', () => {
       const splashUrl = samira.dataDragon.getChampionSplashUrl('Aatrox');
       expect(splashUrl).toContain('img/champion/splash/Aatrox.png');
-      
+
       const skinSplashUrl = samira.dataDragon.getChampionSplashUrl('Aatrox', '1');
       expect(skinSplashUrl).toContain('img/champion/splash/Aatrox_1.png');
     });
 
     it('should handle champion splash art correctly', () => {
       const loadingUrl = samira.dataDragon.getChampionLoadingUrl('Aatrox');
-      expect(loadingUrl).toContain('https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Aatrox_0.jpg');
-      
+      expect(loadingUrl).toContain(
+        'https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Aatrox_0.jpg',
+      );
+
       const skinLoadingUrl = samira.dataDragon.getChampionLoadingUrl('Aatrox', '1');
-      expect(skinLoadingUrl).toContain('https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Aatrox_1.jpg');
+      expect(skinLoadingUrl).toContain(
+        'https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Aatrox_1.jpg',
+      );
     });
   });
 
   describe('configuration updates', () => {
     it('should update configuration correctly', () => {
       const originalConfig = samira.dataDragon.getConfig();
-      
+
       samira.dataDragon.updateConfig({
         language: 'pt_BR',
         includeFullUrl: false,
       });
-      
+
       const updatedConfig = samira.dataDragon.getConfig();
       expect(updatedConfig.language).toBe('pt_BR');
       expect(updatedConfig.includeFullUrl).toBe(false);
       expect(updatedConfig.version).toBe(originalConfig.version); // Should remain unchanged
-      
+
       // Test that asset URLs now return paths instead of full URLs
       const championImageUrl = samira.dataDragon.getChampionImageUrl('Aatrox');
       expect(championImageUrl).toBe('img/champion/Aatrox.png');
-      
+
       // Restore original config
       samira.dataDragon.updateConfig(originalConfig);
-      
+
       console.log('⚙️  Configuration updated successfully');
     });
   });

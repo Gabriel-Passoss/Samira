@@ -1,5 +1,7 @@
 # Samira - League of Legends API Library
 
+[![](https://img.shields.io/npm/v/samira.svg)](https://www.npmjs.com/package/samira)
+
 A TypeScript library for League of Legends API calls with built-in rate limiting, error handling, and type safety.
 
 ## Features
@@ -51,6 +53,7 @@ const samira = new Samira({
 ## Services
 
 ### Account Service
+
 ```typescript
 // Get account by Riot ID
 const account = await samira.account.getAccountByRiotId('GameName', 'TagLine');
@@ -60,12 +63,14 @@ const account = await samira.account.getAccountByPuuid('puuid-here');
 ```
 
 ### Summoner Service
+
 ```typescript
 // Get summoner by PUUID
 const summoner = await samira.summoner.getSummonerByPuuid('puuid-here');
 ```
 
 ### Match Service
+
 ```typescript
 // Get match by ID
 const match = await samira.match.getMatchById('match-id-here');
@@ -78,6 +83,7 @@ const recentMatches = await samira.match.getRecentMatches('puuid-here', 20);
 ```
 
 ### Spectator Service
+
 ```typescript
 // Get active game by PUUID
 const activeGame = await samira.spectator.getActiveGameByPuuid('puuid-here');
@@ -87,6 +93,7 @@ const featuredGames = await samira.spectator.getFeaturedGames();
 ```
 
 ### Data Dragon Service
+
 ```typescript
 // Get latest game version
 const versions = await samira.dataDragon.getLatestVersion();
@@ -119,7 +126,7 @@ import {
   LeagueEntry,
   Account,
   CurrentGame,
-  
+
   // Zod schemas for validation
   ChampionSchema,
   SummonerSchema,
@@ -127,12 +134,12 @@ import {
   LeagueEntrySchema,
   AccountSchema,
   CurrentGameSchema,
-  
+
   // Utility types
   Either,
   Left,
   Right,
-  
+
   // Constants
   REGIONS,
   PLATFORMS,
@@ -143,27 +150,32 @@ import {
 ### Type Categories
 
 #### Data Dragon Types
+
 - `Champion`, `Champions` - Champion data and lists
 - `ItemAsset`, `RuneAsset`, `SummonerSpellAsset` - Game assets
 - `ChampionInfo`, `ChampionStats`, `ChampionSkin`, `ChampionSpell`, `ChampionPassive`
 
 #### Account & Summoner Types
+
 - `Account` - Riot account information
 - `Summoner` - Summoner profile data
 - `ChampionMastery` - Champion mastery information
 
 #### League Types
+
 - `LeagueEntry` - Ranked league information
 - `MiniSeries` - Promotion series data
 - `Rank`, `Tier` - Rank and tier enums
 
 #### Match Types
+
 - `Match`, `MatchMetadata`, `MatchInfo` - Match data structure
 - `MatchParticipant` - Individual player data
 - `Challenge`, `Mission` - Advanced match statistics
 - `MatchTeam`, `Ban`, `Objective` - Team and objective data
 
 #### Spectator Types
+
 - `CurrentGame` - Active game information
 - `FeaturedGames` - Featured games list
 - `SpectatorParticipant` - Player data in spectator mode
@@ -200,6 +212,7 @@ if (result.isRight()) {
   console.error(error.message);
 }
 ```
+
 const items = await samira.dataDragon.getItems();
 
 // Get specific item
@@ -210,7 +223,8 @@ const runes = await samira.dataDragon.getRunes();
 
 // Get summoner spells
 const spells = await samira.dataDragon.getSummonerSpells();
-```
+
+````
 
 ## Asset URLs
 
@@ -240,7 +254,7 @@ const runeImage = samira.dataDragon.getRuneImageUrl(8000);
 
 // Summoner spell images
 const spellImage = samira.dataDragon.getSummonerSpellImageUrl('SummonerFlash');
-```
+````
 
 ### URL Configuration
 
@@ -274,12 +288,14 @@ samira.dataDragon.updateConfig({
 ## Routing
 
 ### Platform Routing (Game-specific endpoints)
+
 ```typescript
 samira.usePlatformRouting(); // Uses platform-specific endpoints
 // Examples: /lol/summoner/v4/, /lol/match/v5/, /lol/spectator/v5/
 ```
 
 ### Regional Routing (Account endpoints)
+
 ```typescript
 samira.useRegionalRouting(); // Uses regional endpoints
 // Examples: /riot/account/v1/
@@ -340,6 +356,7 @@ npm run test:coverage
 ## API Reference
 
 ### Samira Class
+
 - `constructor(config: SamiraConfig)`
 - `getConfig(): SamiraConfig`
 - `getHttpClient(): HttpClient`
@@ -350,6 +367,7 @@ npm run test:coverage
 - `usePlatformRouting(): void`
 
 ### Data Dragon Service
+
 - `getLatestVersion(): Promise<Either<ApiError, string[]>>`
 - `getChampions(version?: string): Promise<Either<ApiError, Record<string, ChampionAsset>>>`
 - `getChampion(championId: string, version?: string): Promise<Either<ApiError, ChampionAsset>>`

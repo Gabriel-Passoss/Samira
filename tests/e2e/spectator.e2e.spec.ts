@@ -19,7 +19,7 @@ describe('Spectator Service E2E', () => {
       region: REGIONS.AMERICAS,
       platform: PLATFORMS.NA1,
     });
-    
+
     console.log('🚀 Samira initialized with config:', samira.getConfig());
 
     samira.usePlatformRouting();
@@ -28,14 +28,14 @@ describe('Spectator Service E2E', () => {
   // Rate limiting helper function
   const waitForRateLimit = async () => {
     const status = samira.getHttpClient().getRateLimitStatus();
-    
+
     if (!status.canMakeRequest) {
       const delay = status.delayUntilNext;
-      await new Promise(resolve => setTimeout(resolve, delay + 100));
+      await new Promise((resolve) => setTimeout(resolve, delay + 100));
     }
-    
+
     if (status.requestsInWindow >= 80) {
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
     }
   };
 
@@ -51,8 +51,6 @@ describe('Spectator Service E2E', () => {
       const featuredGames = await samira.spectator.getFeaturedGames();
 
       expect(featuredGames.isRight()).toBe(true);
-
-
 
       if (featuredGames.isRight()) {
         const game = featuredGames.value.gameList[0];
@@ -77,12 +75,12 @@ describe('Spectator Service E2E', () => {
       expect(result.isRight()).toBe(true);
       if (result.isRight()) {
         const featuredGames = result.value;
-        
+
         // Validate data structure
         expect(featuredGames).toHaveProperty('gameList');
         expect(Array.isArray(featuredGames.gameList)).toBe(true);
         expect(featuredGames.gameList.length).toBeGreaterThan(0);
-        
+
         const game = featuredGames.gameList[0];
         expect(game).toHaveProperty('gameId');
         expect(game).toHaveProperty('gameType');
@@ -93,7 +91,7 @@ describe('Spectator Service E2E', () => {
         expect(game).toHaveProperty('gameQueueConfigId');
         expect(game).toHaveProperty('observers');
         expect(game).toHaveProperty('participants');
-        
+
         // Validate data types
         expect(typeof game.gameId).toBe('number');
         expect(typeof game.gameType).toBe('string');
@@ -103,7 +101,7 @@ describe('Spectator Service E2E', () => {
         expect(Array.isArray(game.bannedChampions)).toBe(true);
         expect(Array.isArray(game.participants)).toBe(true);
         expect(game.participants.length).toBeGreaterThan(0);
-        
+
         // Validate participant data
         const participant = game.participants[0];
         expect(typeof participant.bot).toBe('boolean');
@@ -113,9 +111,9 @@ describe('Spectator Service E2E', () => {
         expect(typeof participant.profileIconId).toBe('number');
         expect(typeof participant.championId).toBe('number');
         expect(typeof participant.teamId).toBe('number');
-        
+
         // Validate data content
-        expect(participant.puuid).toMatch(/^[a-zA-Z0-9_-]{70,80}$/); 
+        expect(participant.puuid).toMatch(/^[a-zA-Z0-9_-]{70,80}$/);
       }
     });
   });
@@ -127,9 +125,9 @@ describe('Spectator Service E2E', () => {
         apiKey: process.env.RIOT_API_KEY!,
         platform: 'invalid-platform',
       });
-      
+
       const result = await invalidSamira.account.getAccountByRiotId('Dave Mustaine', 'trash');
-      
+
       expect(result.isLeft()).toBe(true);
       if (result.isLeft()) {
         expect(result.value.message).toContain('No response received from server');
@@ -142,12 +140,12 @@ describe('Spectator Service E2E', () => {
         apiKey: 'invalid-api-key',
         region: 'americas',
       });
-      
+
       // Use regional routing for account endpoints
       invalidSamira.useRegionalRouting();
-      
+
       const result = await invalidSamira.account.getAccountByRiotId('Faker', 'KR1');
-      
+
       expect(result.isLeft()).toBe(true);
       if (result.isLeft()) {
         expect(result.value.status).toBe(401);

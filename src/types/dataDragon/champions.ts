@@ -1,5 +1,5 @@
-import z from "zod";
-import { AssetImageSchema } from "./assetImage";
+import z from 'zod';
+import { AssetImageSchema } from './assetImage';
 
 export const ChampionsSchema = z.object({
   version: z.string(),
@@ -37,7 +37,7 @@ export const ChampionsSchema = z.object({
     attackdamageperlevel: z.number(),
     attackspeedperlevel: z.number(),
     attackspeed: z.number(),
-  })
+  }),
 });
 
 export type Champions = z.infer<typeof ChampionsSchema>;

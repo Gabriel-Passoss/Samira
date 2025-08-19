@@ -1,5 +1,5 @@
-import { z } from "zod";
-import { AssetImageSchema } from "./assetImage";
+import { z } from 'zod';
+import { AssetImageSchema } from './assetImage';
 
 export const ChampionInfoSchema = z.object({
   attack: z.number(),
@@ -68,24 +68,26 @@ export const ChampionPassiveSchema = z.object({
   image: AssetImageSchema,
 });
 
-export const ChampionSchema = z.object({
-  id: z.string(),
-  key: z.string(),
-  name: z.string(),
-  title: z.string(),
-  blurb: z.string(),
-  tags: z.array(z.string()),
-  partype: z.string(),
-  info: ChampionInfoSchema,
-  image: AssetImageSchema,
-  stats: ChampionStatsSchema,
-  skins: z.array(ChampionSkinSchema),
-  lore: z.string(),
-  allytips: z.array(z.string()),
-  enemytips: z.array(z.string()),
-  spells: z.array(ChampionSpellSchema),
-  passive: ChampionPassiveSchema,
-}).passthrough();
+export const ChampionSchema = z
+  .object({
+    id: z.string(),
+    key: z.string(),
+    name: z.string(),
+    title: z.string(),
+    blurb: z.string(),
+    tags: z.array(z.string()),
+    partype: z.string(),
+    info: ChampionInfoSchema,
+    image: AssetImageSchema,
+    stats: ChampionStatsSchema,
+    skins: z.array(ChampionSkinSchema),
+    lore: z.string(),
+    allytips: z.array(z.string()),
+    enemytips: z.array(z.string()),
+    spells: z.array(ChampionSpellSchema),
+    passive: ChampionPassiveSchema,
+  })
+  .passthrough();
 
 export type ChampionInfo = z.infer<typeof ChampionInfoSchema>;
 export type ChampionStats = z.infer<typeof ChampionStatsSchema>;

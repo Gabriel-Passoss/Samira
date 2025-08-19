@@ -73,7 +73,7 @@ describe('Zod Schemas', () => {
             num: 0,
             name: 'Annie',
             chromas: false,
-          }
+          },
         ],
         lore: 'Dangerous, but disarmingly precocious, Annie is a child mage with immense pyromantic power.',
         allytips: ['Use your Q to farm minions and gain mana back.'],
@@ -96,11 +96,31 @@ describe('Zod Schemas', () => {
             maxammo: '-1',
             range: [0],
             rangeBurn: '0',
-            image: { full: 'AnnieQ.png', sprite: 'spell0.png', group: 'spell', x: 0, y: 0, w: 48, h: 48 },
-            resource: 'Mana'
-          }
+            image: {
+              full: 'AnnieQ.png',
+              sprite: 'spell0.png',
+              group: 'spell',
+              x: 0,
+              y: 0,
+              w: 48,
+              h: 48,
+            },
+            resource: 'Mana',
+          },
         ],
-        passive: { name: 'Pyromania', description: 'After casting 4 spells, Annie\'s next offensive spell will stun the target.', image: { full: 'Annie_Passive.png', sprite: 'passive0.png', group: 'passive', x: 0, y: 0, w: 48, h: 48 } },
+        passive: {
+          name: 'Pyromania',
+          description: "After casting 4 spells, Annie's next offensive spell will stun the target.",
+          image: {
+            full: 'Annie_Passive.png',
+            sprite: 'passive0.png',
+            group: 'passive',
+            x: 0,
+            y: 0,
+            w: 48,
+            h: 48,
+          },
+        },
         stats: {
           hp: 524,
           hpperlevel: 88,
@@ -303,7 +323,7 @@ describe('Zod Schemas', () => {
               wardsPlaced: 8,
               win: true,
               challenges: {
-                "12AssistStreakCount": 0,
+                '12AssistStreakCount': 0,
                 baronBuffGoldAdvantageOverThreshold: 0,
                 controlWardTimeCoverageInRiverOrEnemyHalf: 0,
                 earliestBaron: 0,

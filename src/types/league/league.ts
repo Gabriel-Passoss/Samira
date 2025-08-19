@@ -1,7 +1,7 @@
-import z from "zod";
-import { MiniSeriesSchema } from "./miniSeries";
-import { RankSchema } from "./rank";
-import { TierSchema } from "./tier";
+import z from 'zod';
+import { MiniSeriesSchema } from './miniSeries';
+import { RankSchema } from './rank';
+import { TierSchema } from './tier';
 
 export const LeagueEntrySchema = z.object({
   leagueId: z.string(),

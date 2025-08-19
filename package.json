@@ -2,6 +2,14 @@
   "name": "samira",
   "version": "1.0.2",
   "description": "A TypeScript library for League of Legends API calls",
+  "author": "Gabriel-Passoss",
+  "homepage": "https://github.com/Gabriel-Passoss/Samira#readme",
+  "bugs": "https://github.com/Gabriel-Passoss/Samira/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Gabriel-Passoss/Samira.git"
+  },
+  "license": "MIT",
   "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -25,7 +33,9 @@
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "vitest run --config vitest.e2e.config.ts",
-    "test:e2e:watch": "vitest --config vitest.e2e.config.ts"
+    "test:e2e:watch": "vitest --config vitest.e2e.config.ts",
+    "lint:prettier": "prettier -c .",
+    "format:prettier": "prettier -w ."
   },
   "keywords": [
     "league-of-legends",
@@ -34,8 +44,6 @@
     "typescript",
     "zod"
   ],
-  "author": "Your Name",
-  "license": "MIT",
   "dependencies": {
     "axios": "^1.6.0",
     "zod": "^3.22.4"
@@ -48,6 +56,7 @@
     "@types/node": "^20.8.0",
     "@vitest/ui": "^1.0.0",
     "dotenv": "^16.3.1",
+    "prettier": "^3.6.2",
     "semantic-release": "^24.2.7",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2",

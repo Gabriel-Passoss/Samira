@@ -1,5 +1,5 @@
-import z from "zod";
-import { GameCustomizationObjectSchema } from "./gameCustomizationObject";
+import z from 'zod';
+import { GameCustomizationObjectSchema } from './gameCustomizationObject';
 
 export const SpectatorPerksSchema = z.object({
   perkIds: z.array(z.number()),

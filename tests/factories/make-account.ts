@@ -11,7 +11,8 @@ export function makeAccount(options: MakeAccountOptions = {}): Account {
   return {
     puuid: options.puuid || faker.string.uuid(),
     gameName: options.gameName || faker.internet.username(),
-    tagLine: options.tagLine || faker.string.alphanumeric({ length: { min: 3, max: 5 } }).toUpperCase(),
+    tagLine:
+      options.tagLine || faker.string.alphanumeric({ length: { min: 3, max: 5 } }).toUpperCase(),
   };
 }
 

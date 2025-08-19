@@ -1,4 +1,4 @@
-import z from "zod";
+import z from 'zod';
 
 export const TierSchema = z.enum([
   'IRON',
@@ -10,7 +10,7 @@ export const TierSchema = z.enum([
   'DIAMOND',
   'MASTER',
   'GRANDMASTER',
-  'CHALLENGER'
+  'CHALLENGER',
 ]);
 
 export type Tier = z.infer<typeof TierSchema>;

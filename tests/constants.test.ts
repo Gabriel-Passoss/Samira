@@ -35,7 +35,7 @@ describe('Constants', () => {
     });
 
     it('should have correct platform URL format', () => {
-      Object.values(PLATFORMS).forEach(platform => {
+      Object.values(PLATFORMS).forEach((platform) => {
         expect(platform).toMatch(/^[a-z0-9]+$/);
       });
     });
@@ -54,7 +54,7 @@ describe('Constants', () => {
     });
 
     it('should have correct routing URL format', () => {
-      Object.values(REGIONAL_ROUTING).forEach(routing => {
+      Object.values(REGIONAL_ROUTING).forEach((routing) => {
         expect(routing).toMatch(/^[a-z]+$/);
       });
     });
@@ -114,7 +114,7 @@ describe('Constants', () => {
     });
 
     it('should have numeric values', () => {
-      Object.values(QUEUE_TYPES).forEach(value => {
+      Object.values(QUEUE_TYPES).forEach((value) => {
         expect(typeof value).toBe('number');
         expect(value).toBeGreaterThan(0);
       });
@@ -130,7 +130,7 @@ describe('Constants', () => {
     });
 
     it('should have string values', () => {
-      Object.values(GAME_MODES).forEach(value => {
+      Object.values(GAME_MODES).forEach((value) => {
         expect(typeof value).toBe('string');
         expect(value.length).toBeGreaterThan(0);
       });
@@ -145,7 +145,7 @@ describe('Constants', () => {
     });
 
     it('should have numeric values', () => {
-      Object.values(MAP_IDS).forEach(value => {
+      Object.values(MAP_IDS).forEach((value) => {
         expect(typeof value).toBe('number');
         expect(value).toBeGreaterThan(0);
       });

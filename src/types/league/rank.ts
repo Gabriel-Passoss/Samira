@@ -1,12 +1,12 @@
-import z from "zod";
+import z from 'zod';
 
 export const RankSchema = z.enum([
-  '',   // Empty string for Master, Grandmaster, Challenger tiers
+  '', // Empty string for Master, Grandmaster, Challenger tiers
   'I',
   'II',
   'III',
   'IV',
-  'V'
+  'V',
 ]);
 
 export type Rank = z.infer<typeof RankSchema>;

@@ -1,6 +1,6 @@
-import z from "zod";
-import { SpectatorParticipantSchema } from "./participant";
-import { BannedChampionSchema } from "./bannedChampion";
+import z from 'zod';
+import { SpectatorParticipantSchema } from './participant';
+import { BannedChampionSchema } from './bannedChampion';
 
 export const FeaturedGameInfoSchema = z.object({
   gameMode: z.string(),

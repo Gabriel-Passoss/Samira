@@ -1,7 +1,7 @@
-import z from "zod";
-import { BannedChampionSchema } from "./bannedChampion";
-import { GameCustomizationObjectSchema } from "./gameCustomizationObject";
-import { SpectatorParticipantSchema } from "./participant";
+import z from 'zod';
+import { BannedChampionSchema } from './bannedChampion';
+import { GameCustomizationObjectSchema } from './gameCustomizationObject';
+import { SpectatorParticipantSchema } from './participant';
 
 export const CurrentGameSchema = z.object({
   gameId: z.number(),

@@ -39,33 +39,36 @@ export const ENDPOINTS = {
   // Champion endpoints
   CHAMPIONS: '/lol/platform/v3/champions',
   CHAMPION_BY_ID: '/lol/platform/v3/champions/{id}',
-  
+
   // Summoner endpoints
   SUMMONER_BY_ACCOUNT: '/lol/summoner/v4/summoners/by-account/{encryptedAccountId}',
   SUMMONER_BY_NAME: '/lol/summoner/v4/summoners/by-name/{summonerName}',
   SUMMONER_BY_PUUID: '/lol/summoner/v4/summoners/by-puuid/{encryptedPUUID}',
   SUMMONER_BY_ID: '/lol/summoner/v4/summoners/{encryptedSummonerId}',
-  
+
   // Match endpoints
   MATCH_BY_ID: '/lol/match/v5/matches/{matchId}',
   MATCHES_BY_PUUID: '/lol/match/v5/matches/by-puuid/{puuid}/ids',
-  
+
   // League endpoints
   LEAGUE_ENTRIES_BY_PUUID: '/lol/league/v4/entries/by-puuid/{encryptedPUUID}',
-  
+
   // Account endpoints
   ACCOUNT_BY_PUUID: '/riot/account/v1/accounts/by-puuid/{puuid}',
   ACCOUNT_BY_RIOT_ID: '/riot/account/v1/accounts/by-riot-id/{gameName}/{tagLine}',
-  
+
   // Champion Mastery endpoints
-  CHAMPION_MASTERIES_BY_SUMMONER: '/lol/champion-mastery/v4/champion-masteries/by-summoner/{encryptedSummonerId}',
-  CHAMPION_MASTERY_BY_SUMMONER_AND_CHAMPION: '/lol/champion-mastery/v4/champion-masteries/by-summoner/{encryptedSummonerId}/by-champion/{championId}',
-  CHAMPION_MASTERY_SCORE_BY_SUMMONER: '/lol/champion-mastery/v4/scores/by-summoner/{encryptedSummonerId}',
-  
+  CHAMPION_MASTERIES_BY_SUMMONER:
+    '/lol/champion-mastery/v4/champion-masteries/by-summoner/{encryptedSummonerId}',
+  CHAMPION_MASTERY_BY_SUMMONER_AND_CHAMPION:
+    '/lol/champion-mastery/v4/champion-masteries/by-summoner/{encryptedSummonerId}/by-champion/{championId}',
+  CHAMPION_MASTERY_SCORE_BY_SUMMONER:
+    '/lol/champion-mastery/v4/scores/by-summoner/{encryptedSummonerId}',
+
   // Spectator endpoints
   CURRENT_GAME_BY_SUMMONER: '/lol/spectator/v5/active-games/by-summoner/{encryptedPUUID}',
   FEATURED_GAMES: '/lol/spectator/v5/featured-games',
-  
+
   // Status endpoints
   PLATFORM_STATUS: '/lol/status/v4/platform-data',
 } as const;
@@ -165,12 +168,12 @@ export const RANK_DIVISIONS = {
   IV: 'IV',
 } as const;
 
-export type Region = typeof REGIONS[keyof typeof REGIONS];
-export type Platform = typeof PLATFORMS[keyof typeof PLATFORMS];
-export type RegionalRouting = typeof REGIONAL_ROUTING[keyof typeof REGIONAL_ROUTING];
-export type QueueType = typeof QUEUE_TYPES[keyof typeof QUEUE_TYPES];
-export type GameMode = typeof GAME_MODES[keyof typeof GAME_MODES];
-export type MapId = typeof MAP_IDS[keyof typeof MAP_IDS];
-export type ChampionTag = typeof CHAMPION_TAGS[keyof typeof CHAMPION_TAGS];
-export type TierLevel = typeof TIER_LEVELS[keyof typeof TIER_LEVELS];
-export type RankDivision = typeof RANK_DIVISIONS[keyof typeof RANK_DIVISIONS];
+export type Region = (typeof REGIONS)[keyof typeof REGIONS];
+export type Platform = (typeof PLATFORMS)[keyof typeof PLATFORMS];
+export type RegionalRouting = (typeof REGIONAL_ROUTING)[keyof typeof REGIONAL_ROUTING];
+export type QueueType = (typeof QUEUE_TYPES)[keyof typeof QUEUE_TYPES];
+export type GameMode = (typeof GAME_MODES)[keyof typeof GAME_MODES];
+export type MapId = (typeof MAP_IDS)[keyof typeof MAP_IDS];
+export type ChampionTag = (typeof CHAMPION_TAGS)[keyof typeof CHAMPION_TAGS];
+export type TierLevel = (typeof TIER_LEVELS)[keyof typeof TIER_LEVELS];
+export type RankDivision = (typeof RANK_DIVISIONS)[keyof typeof RANK_DIVISIONS];

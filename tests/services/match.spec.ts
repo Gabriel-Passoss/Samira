@@ -15,15 +15,15 @@ describe('MatchService', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // Create a mock HttpClient instance
     mockHttpClient = {
       get: vi.fn(),
     };
-    
+
     // Mock the HttpClient constructor to return our mock
     (HttpClient as any).mockImplementation(() => mockHttpClient);
-    
+
     // Create the service with the mocked client
     matchService = new MatchService(mockHttpClient);
   });
@@ -39,15 +39,17 @@ describe('MatchService', () => {
       const matchId = 'BR1_3130694840';
       const mockMatchData = makeMatch({ matchId });
 
-      mockHttpClient.get.mockResolvedValue(right({
-        data: mockMatchData,
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-      }));
+      mockHttpClient.get.mockResolvedValue(
+        right({
+          data: mockMatchData,
+          status: 200,
+          statusText: 'OK',
+          headers: {},
+        }),
+      );
 
       const match = await matchService.getMatchById(matchId);
-      
+
       expect(match.isRight()).toBe(true);
       if (match.isRight()) {
         expect(match.value).toBeDefined();
@@ -76,22 +78,24 @@ describe('MatchService', () => {
   describe('getMatchHistoryByPUUID', () => {
     it('should fetch match history with default options', async () => {
       const mockMatchIds = ['match1', 'match2', 'match3'];
-      
-      mockHttpClient.get.mockResolvedValue(right({
-        data: mockMatchIds,
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-      }));
+
+      mockHttpClient.get.mockResolvedValue(
+        right({
+          data: mockMatchIds,
+          status: 200,
+          statusText: 'OK',
+          headers: {},
+        }),
+      );
 
       const result = await matchService.getMatchHistoryByPUUID('test-puuid');
-      
+
       expect(result.isRight()).toBe(true);
       if (result.isRight()) {
         expect(result.value).toEqual(mockMatchIds);
       }
       expect(mockHttpClient.get).toHaveBeenCalledWith(
-        ENDPOINTS.MATCHES_BY_PUUID.replace('{puuid}', 'test-puuid')
+        ENDPOINTS.MATCHES_BY_PUUID.replace('{puuid}', 'test-puuid'),
       );
     });
 
@@ -105,22 +109,26 @@ describe('MatchService', () => {
         queue: 420,
         type: 'ranked',
       };
-      
-      mockHttpClient.get.mockResolvedValue(right({
-        data: mockMatchIds,
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-      }));
+
+      mockHttpClient.get.mockResolvedValue(
+        right({
+          data: mockMatchIds,
+          status: 200,
+          statusText: 'OK',
+          headers: {},
+        }),
+      );
 
       const result = await matchService.getMatchHistoryByPUUID('test-puuid', options);
-      
+
       expect(result.isRight()).toBe(true);
       if (result.isRight()) {
         expect(result.value).toEqual(mockMatchIds);
       }
       expect(mockHttpClient.get).toHaveBeenCalledWith(
-        expect.stringContaining('start=0&count=2&startTime=1640995200000&endTime=1640997000000&queue=420&type=ranked')
+        expect.stringContaining(
+          'start=0&count=2&startTime=1640995200000&endTime=1640997000000&queue=420&type=ranked',
+        ),
       );
     });
   });
@@ -135,12 +143,18 @@ describe('MatchService', () => {
       ];
 
       mockHttpClient.get
-        .mockResolvedValueOnce(right({ data: mockMatches[0], status: 200, statusText: 'OK', headers: {} }))
-        .mockResolvedValueOnce(right({ data: mockMatches[1], status: 200, statusText: 'OK', headers: {} }))
-        .mockResolvedValueOnce(right({ data: mockMatches[2], status: 200, statusText: 'OK', headers: {} }));
+        .mockResolvedValueOnce(
+          right({ data: mockMatches[0], status: 200, statusText: 'OK', headers: {} }),
+        )
+        .mockResolvedValueOnce(
+          right({ data: mockMatches[1], status: 200, statusText: 'OK', headers: {} }),
+        )
+        .mockResolvedValueOnce(
+          right({ data: mockMatches[2], status: 200, statusText: 'OK', headers: {} }),
+        );
 
       const result = await matchService.getMatchesByIds(matchIds);
-      
+
       expect(result.isRight()).toBe(true);
       if (result.isRight()) {
         expect(result.value).toHaveLength(3);
@@ -153,13 +167,20 @@ describe('MatchService', () => {
 
     it('should handle errors when fetching multiple matches', async () => {
       const matchIds = ['match1', 'match2'];
-      
+
       mockHttpClient.get
-        .mockResolvedValueOnce(right({ data: makeMatch({ matchId: 'match1' }), status: 200, statusText: 'OK', headers: {} }))
+        .mockResolvedValueOnce(
+          right({
+            data: makeMatch({ matchId: 'match1' }),
+            status: 200,
+            statusText: 'OK',
+            headers: {},
+          }),
+        )
         .mockResolvedValueOnce(left({ message: 'Failed to fetch match2', status: 500 }));
 
       const result = await matchService.getMatchesByIds(matchIds);
-      
+
       // Should return successful matches and handle errors for failed ones
       expect(result.isRight()).toBe(true);
       if (result.isRight()) {
@@ -172,22 +193,25 @@ describe('MatchService', () => {
   describe('getRecentMatches', () => {
     it('should fetch recent matches with default count', async () => {
       const mockMatchIds = ['match1', 'match2', 'match3', 'match4', 'match5'];
-      const mockMatches = mockMatchIds.map(id => makeMatch({ matchId: id, gameMode: 'CLASSIC' }));
+      const mockMatches = mockMatchIds.map((id) => makeMatch({ matchId: id, gameMode: 'CLASSIC' }));
 
-      mockHttpClient.get
-        .mockResolvedValueOnce(right({ data: mockMatchIds, status: 200, statusText: 'OK', headers: {} }));
+      mockHttpClient.get.mockResolvedValueOnce(
+        right({ data: mockMatchIds, status: 200, statusText: 'OK', headers: {} }),
+      );
 
-      mockMatches.forEach(match => {
-        mockHttpClient.get.mockResolvedValueOnce(right({
-          data: match,
-          status: 200,
-          statusText: 'OK',
-          headers: {},
-        }));
+      mockMatches.forEach((match) => {
+        mockHttpClient.get.mockResolvedValueOnce(
+          right({
+            data: match,
+            status: 200,
+            statusText: 'OK',
+            headers: {},
+          }),
+        );
       });
 
       const result = await matchService.getRecentMatches('test-puuid');
-      
+
       expect(result.isRight()).toBe(true);
       if (result.isRight()) {
         expect(result.value).toHaveLength(5);
@@ -197,22 +221,25 @@ describe('MatchService', () => {
 
     it('should fetch recent matches with custom count', async () => {
       const mockMatchIds = ['match1', 'match2'];
-      const mockMatches = mockMatchIds.map(id => makeMatch({ matchId: id, gameMode: 'CLASSIC' }));
+      const mockMatches = mockMatchIds.map((id) => makeMatch({ matchId: id, gameMode: 'CLASSIC' }));
 
-      mockHttpClient.get
-        .mockResolvedValueOnce(right({ data: mockMatchIds, status: 200, statusText: 'OK', headers: {} }));
+      mockHttpClient.get.mockResolvedValueOnce(
+        right({ data: mockMatchIds, status: 200, statusText: 'OK', headers: {} }),
+      );
 
-      mockMatches.forEach(match => {
-        mockHttpClient.get.mockResolvedValueOnce(right({
-          data: match,
-          status: 200,
-          statusText: 'OK',
-          headers: {},
-        }));
+      mockMatches.forEach((match) => {
+        mockHttpClient.get.mockResolvedValueOnce(
+          right({
+            data: match,
+            status: 200,
+            statusText: 'OK',
+            headers: {},
+          }),
+        );
       });
 
       const result = await matchService.getRecentMatches('test-puuid', 2);
-      
+
       expect(result.isRight()).toBe(true);
       if (result.isRight()) {
         expect(result.value).toHaveLength(2);
@@ -223,31 +250,34 @@ describe('MatchService', () => {
   describe('getMatchesInTimeRange', () => {
     it('should fetch matches in time range', async () => {
       const startTime = 1640995200000; // Jan 1, 2022
-      const endTime = 1640997000000;   // Jan 1, 2022 + 30 minutes
-      
+      const endTime = 1640997000000; // Jan 1, 2022 + 30 minutes
+
       const mockMatchIds = ['match1', 'match2'];
-      const mockMatches = mockMatchIds.map(id => makeMatch({ matchId: id, gameMode: 'CLASSIC' }));
+      const mockMatches = mockMatchIds.map((id) => makeMatch({ matchId: id, gameMode: 'CLASSIC' }));
 
-      mockHttpClient.get
-        .mockResolvedValueOnce(right({ data: mockMatchIds, status: 200, statusText: 'OK', headers: {} }));
+      mockHttpClient.get.mockResolvedValueOnce(
+        right({ data: mockMatchIds, status: 200, statusText: 'OK', headers: {} }),
+      );
 
-      mockMatches.forEach(match => {
-        mockHttpClient.get.mockResolvedValueOnce(right({
-          data: match,
-          status: 200,
-          statusText: 'OK',
-          headers: {},
-        }));
+      mockMatches.forEach((match) => {
+        mockHttpClient.get.mockResolvedValueOnce(
+          right({
+            data: match,
+            status: 200,
+            statusText: 'OK',
+            headers: {},
+          }),
+        );
       });
 
       const result = await matchService.getMatchesInTimeRange('test-puuid', startTime, endTime);
-      
+
       expect(result.isRight()).toBe(true);
       if (result.isRight()) {
         expect(result.value).toHaveLength(2);
       }
       expect(mockHttpClient.get).toHaveBeenCalledWith(
-        expect.stringContaining(`startTime=${startTime}&endTime=${endTime}`)
+        expect.stringContaining(`startTime=${startTime}&endTime=${endTime}`),
       );
     });
   });
@@ -255,31 +285,34 @@ describe('MatchService', () => {
   describe('getMatchesByQueue', () => {
     it('should fetch matches by queue type', async () => {
       const queueId = 420; // Ranked Solo/Duo
-      
+
       const mockMatchIds = ['match1', 'match2'];
-      const mockMatches = mockMatchIds.map(id => makeMatch({ matchId: id, gameMode: 'CLASSIC', queueId: 420 }));
+      const mockMatches = mockMatchIds.map((id) =>
+        makeMatch({ matchId: id, gameMode: 'CLASSIC', queueId: 420 }),
+      );
 
-      mockHttpClient.get
-        .mockResolvedValueOnce(right({ data: mockMatchIds, status: 200, statusText: 'OK', headers: {} }));
+      mockHttpClient.get.mockResolvedValueOnce(
+        right({ data: mockMatchIds, status: 200, statusText: 'OK', headers: {} }),
+      );
 
-      mockMatches.forEach(match => {
-        mockHttpClient.get.mockResolvedValueOnce(right({
-          data: match,
-          status: 200,
-          statusText: 'OK',
-          headers: {},
-        }));
+      mockMatches.forEach((match) => {
+        mockHttpClient.get.mockResolvedValueOnce(
+          right({
+            data: match,
+            status: 200,
+            statusText: 'OK',
+            headers: {},
+          }),
+        );
       });
 
       const result = await matchService.getMatchesByQueue('test-puuid', queueId);
-      
+
       expect(result.isRight()).toBe(true);
       if (result.isRight()) {
         expect(result.value).toHaveLength(2);
       }
-      expect(mockHttpClient.get).toHaveBeenCalledWith(
-        expect.stringContaining(`queue=${queueId}`)
-      );
+      expect(mockHttpClient.get).toHaveBeenCalledWith(expect.stringContaining(`queue=${queueId}`));
     });
   });
 
@@ -287,12 +320,14 @@ describe('MatchService', () => {
     it('should get match duration in minutes', async () => {
       const mockMatchData = makeMatch({ gameDuration: 1800 }); // 30 minutes in seconds
 
-      mockHttpClient.get.mockResolvedValue(right({
-        data: mockMatchData,
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-      }));
+      mockHttpClient.get.mockResolvedValue(
+        right({
+          data: mockMatchData,
+          status: 200,
+          statusText: 'OK',
+          headers: {},
+        }),
+      );
 
       const result = await matchService.getMatchDuration('test-match');
       expect(result.isRight()).toBe(true);
@@ -302,17 +337,19 @@ describe('MatchService', () => {
     });
 
     it('should get match creation date', async () => {
-      const mockMatchData = makeMatch({ 
+      const mockMatchData = makeMatch({
         gameCreation: 1641081600000,
-        gameDuration: 1800 
+        gameDuration: 1800,
       });
 
-      mockHttpClient.get.mockResolvedValue(right({
-        data: mockMatchData,
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-      }));
+      mockHttpClient.get.mockResolvedValue(
+        right({
+          data: mockMatchData,
+          status: 200,
+          statusText: 'OK',
+          headers: {},
+        }),
+      );
 
       const result = await matchService.getMatchCreationDate('test-match');
       expect(result.isRight()).toBe(true);

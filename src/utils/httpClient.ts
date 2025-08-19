@@ -42,7 +42,7 @@ export class HttpClient {
       headers: {
         'X-Riot-Token': config.apiKey,
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
+        Accept: 'application/json',
       },
     });
 
@@ -55,7 +55,7 @@ export class HttpClient {
       },
       (error) => {
         return Promise.reject(error);
-      }
+      },
     );
 
     // Add response interceptor for error handling
@@ -66,23 +66,26 @@ export class HttpClient {
           // Rate limit exceeded, wait and retry
           const retryAfter = error.response.headers['retry-after'];
           const delay = retryAfter ? parseInt(retryAfter) * 1000 : 1000;
-          await new Promise(resolve => setTimeout(resolve, delay));
-          
+          await new Promise((resolve) => setTimeout(resolve, delay));
+
           // Retry the request
           if (error.config) {
             return this.client.request(error.config);
           }
         }
-        
+
         return Promise.reject(this.formatError(error));
-      }
+      },
     );
   }
 
   /**
    * Make a GET request
    */
-  async get<T>(url: string, config?: AxiosRequestConfig): Promise<Either<ApiError, ApiResponse<T>>> {
+  async get<T>(
+    url: string,
+    config?: AxiosRequestConfig,
+  ): Promise<Either<ApiError, ApiResponse<T>>> {
     try {
       const response = await this.client.get<T>(url, config);
       return right(this.formatResponse(response));
@@ -96,14 +99,12 @@ export class HttpClient {
     }
   }
 
-
-
   /**
    * Make a GET request with retry logic
    */
   async requestWithRetry<T>(
     url: string,
-    config?: AxiosRequestConfig
+    config?: AxiosRequestConfig,
   ): Promise<Either<ApiError, ApiResponse<T>>> {
     let lastError: ApiError;
     const maxRetries = this.config.retries || 3;
@@ -111,13 +112,13 @@ export class HttpClient {
 
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       const result = await this.get<T>(url, config);
-      
+
       if (result.isRight()) {
         return result;
       }
-      
+
       lastError = result.value;
-      
+
       // Don't retry on client errors (4xx) except rate limiting
       if (lastError.status >= 400 && lastError.status < 500 && lastError.status !== 429) {
         return result;
@@ -129,7 +130,7 @@ export class HttpClient {
       }
 
       // Wait before retrying
-      await new Promise(resolve => setTimeout(resolve, retryDelay * Math.pow(2, attempt)));
+      await new Promise((resolve) => setTimeout(resolve, retryDelay * Math.pow(2, attempt)));
     }
 
     return left(lastError!);
@@ -183,12 +184,12 @@ export class HttpClient {
   private formatError(error: AxiosError): ApiError {
     if (error.response) {
       const responseData = error.response.data as any;
-      
+
       // Handle nested status structure from Riot Games API
       let status = error.response.status;
       let statusText = error.response.statusText;
       let message = this.getErrorMessage(status);
-      
+
       if (responseData?.status) {
         // Check if status is an object with status_code (Riot Games API format)
         if (typeof responseData.status === 'object' && responseData.status.status_code) {
@@ -199,7 +200,7 @@ export class HttpClient {
           status = responseData.status;
         }
       }
-      
+
       // Use response data values if available
       if (responseData?.statusText) {
         statusText = responseData.statusText;
@@ -207,7 +208,7 @@ export class HttpClient {
       if (responseData?.message && typeof responseData.message === 'string') {
         message = responseData.message;
       }
-      
+
       return {
         status,
         statusText,

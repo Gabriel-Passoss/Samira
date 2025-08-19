@@ -1,6 +1,6 @@
-import z from "zod";
-import { MatchParticipantSchema } from "./participant";
-import { TeamSchema } from "./team";
+import z from 'zod';
+import { MatchParticipantSchema } from './participant';
+import { TeamSchema } from './team';
 
 export const MetadataSchema = z.object({
   dataVersion: z.string(),

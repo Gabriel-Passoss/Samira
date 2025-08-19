@@ -1,7 +1,7 @@
-import z from "zod";
+import z from 'zod';
 
 export const ChallengeSchema = z.object({
-  "12AssistStreakCount": z.number().optional(),
+  '12AssistStreakCount': z.number().optional(),
   baronBuffGoldAdvantageOverThreshold: z.number().optional(),
   controlWardTimeCoverageInRiverOrEnemyHalf: z.number().optional(),
   earliestBaron: z.number().optional(),
@@ -179,11 +179,11 @@ export const MatchPerksSchema = z.object({
           var1: z.number(),
           var2: z.number(),
           var3: z.number(),
-        })
+        }),
       ),
       style: z.number(),
     }),
-  )
+  ),
 });
 
 export const MatchParticipantSchema = z.object({
