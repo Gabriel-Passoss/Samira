@@ -1,6 +1,6 @@
 {
   "name": "samira",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A TypeScript library for League of Legends API calls",
   "author": "Gabriel-Passoss",
   "homepage": "https://github.com/Gabriel-Passoss/Samira#readme",
@@ -50,10 +50,14 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^9.9.0",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^11.0.4",
     "@types/node": "^20.8.0",
     "@vitest/ui": "^1.0.0",
     "dotenv": "^16.3.1",
     "prettier": "^3.6.2",
+    "semantic-release": "^24.2.7",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2",
     "vitest": "^1.0.0"

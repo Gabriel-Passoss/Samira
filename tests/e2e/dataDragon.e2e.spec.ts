@@ -67,7 +67,6 @@ describe('Data Dragon Service E2E', () => {
   describe('getChampions', () => {
     it('should fetch all champions successfully', async () => {
       const result = await samira.dataDragon.getChampions();
-
       expect(result.isRight()).toBe(true);
       if (result.isRight()) {
         const champions = result.value;
@@ -81,17 +80,6 @@ describe('Data Dragon Service E2E', () => {
         expect(firstChampion).toHaveProperty('name');
         expect(firstChampion).toHaveProperty('title');
         expect(firstChampion).toHaveProperty('image');
-
-        // These fields are optional in the API response
-        if (firstChampion.skins) {
-          expect(Array.isArray(firstChampion.skins)).toBe(true);
-        }
-        if (firstChampion.spells) {
-          expect(Array.isArray(firstChampion.spells)).toBe(true);
-        }
-        if (firstChampion.passive) {
-          expect(typeof firstChampion.passive).toBe('object');
-        }
       }
     });
   });

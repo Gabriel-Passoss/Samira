@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { makeMatch, makeMatchArray, makeMatchWithCustomParticipants } from './make-match';
+import { makeMatch, makeMatchArray } from './make-match';
 import { MatchSchema } from '../../src/types';
 
 describe('Match Factory', () => {
