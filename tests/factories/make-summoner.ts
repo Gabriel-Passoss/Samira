@@ -13,11 +13,8 @@ export interface MakeSummonerOptions {
 
 export function makeSummoner(options: MakeSummonerOptions = {}): Summoner {
   return {
-    accountId: options.accountId || faker.string.uuid(),
     profileIconId: options.profileIconId || faker.number.int({ min: 1, max: 30 }),
     revisionDate: options.revisionDate || faker.date.recent().getTime(),
-    name: options.name || faker.internet.username(),
-    id: options.id || faker.string.uuid(),
     puuid: options.puuid || faker.string.uuid(),
     summonerLevel: options.summonerLevel || faker.number.int({ min: 1, max: 500 }),
   };

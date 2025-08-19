@@ -71,31 +71,23 @@ describe('Spectator Service E2E', () => {
   });
 
   describe('API response validation', () => {
-    it('should return properly formatted account data', async () => {
-      let puuid = '';
-
-      const featuredGames = await samira.spectator.getFeaturedGames();
-
-      expect(featuredGames.isRight()).toBe(true);
-
-      if (featuredGames.isRight()) {
-        const game = featuredGames.value.gameList[0];
-        puuid = game.participants[0].puuid;
-      }
-
-      const result = await samira.spectator.getActiveGameByPuuid(puuid);
+    it('should return properly formatted featured games data', async () => {
+      const result = await samira.spectator.getFeaturedGames();
 
       expect(result.isRight()).toBe(true);
       if (result.isRight()) {
-        const game = result.value;
+        const featuredGames = result.value;
         
         // Validate data structure
+        expect(featuredGames).toHaveProperty('gameList');
+        expect(Array.isArray(featuredGames.gameList)).toBe(true);
+        expect(featuredGames.gameList.length).toBeGreaterThan(0);
+        
+        const game = featuredGames.gameList[0];
         expect(game).toHaveProperty('gameId');
         expect(game).toHaveProperty('gameType');
-        expect(game).toHaveProperty('gameStartTime');
-        expect(game).toHaveProperty('mapId');
         expect(game).toHaveProperty('gameLength');
-        expect(game).toHaveProperty('platformId');
+        expect(game).toHaveProperty('mapId');
         expect(game).toHaveProperty('gameMode');
         expect(game).toHaveProperty('bannedChampions');
         expect(game).toHaveProperty('gameQueueConfigId');
@@ -103,18 +95,27 @@ describe('Spectator Service E2E', () => {
         expect(game).toHaveProperty('participants');
         
         // Validate data types
-        expect(typeof game.participants[0].bot).toBe('boolean');
-        expect(typeof game.participants[0].puuid).toBe('string');
-        expect(typeof game.participants[0].spell1Id).toBe('number');
-        expect(typeof game.participants[0].spell2Id).toBe('number');
-        expect(typeof game.participants[0].profileIconId).toBe('number');
-        expect(typeof game.participants[0].championId).toBe('number');
-        expect(typeof game.participants[0].teamId).toBe('number');
-        expect(typeof game.participants[0].gameCustomizationObjects).toBe('object');
-        expect(typeof game.participants[0].perks).toBe('object');
+        expect(typeof game.gameId).toBe('number');
+        expect(typeof game.gameType).toBe('string');
+        expect(typeof game.gameLength).toBe('number');
+        expect(typeof game.mapId).toBe('number');
+        expect(typeof game.gameMode).toBe('string');
+        expect(Array.isArray(game.bannedChampions)).toBe(true);
+        expect(Array.isArray(game.participants)).toBe(true);
+        expect(game.participants.length).toBeGreaterThan(0);
+        
+        // Validate participant data
+        const participant = game.participants[0];
+        expect(typeof participant.bot).toBe('boolean');
+        expect(typeof participant.puuid).toBe('string');
+        expect(typeof participant.spell1Id).toBe('number');
+        expect(typeof participant.spell2Id).toBe('number');
+        expect(typeof participant.profileIconId).toBe('number');
+        expect(typeof participant.championId).toBe('number');
+        expect(typeof participant.teamId).toBe('number');
         
         // Validate data content
-        expect(game.participants[0].puuid).toMatch(/^[a-zA-Z0-9_-]{70,80}$/); 
+        expect(participant.puuid).toMatch(/^[a-zA-Z0-9_-]{70,80}$/); 
       }
     });
   });

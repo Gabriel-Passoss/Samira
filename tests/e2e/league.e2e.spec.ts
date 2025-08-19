@@ -158,7 +158,6 @@ describe('League Service E2E', () => {
       
       expect(result.isLeft()).toBe(true);
       if (result.isLeft()) {
-        console.log(result.value);
         expect(result.value.status).toBe(401);
       }
     });

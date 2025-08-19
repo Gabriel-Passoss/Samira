@@ -8,11 +8,8 @@ describe('Summoner Factory', () => {
       const summoner = makeSummoner();
       
       expect(summoner).toBeDefined();
-      expect(summoner.accountId).toBeDefined();
       expect(summoner.profileIconId).toBeDefined();
       expect(summoner.revisionDate).toBeDefined();
-      expect(summoner.name).toBeDefined();
-      expect(summoner.id).toBeDefined();
       expect(summoner.puuid).toBeDefined();
       expect(summoner.summonerLevel).toBeDefined();
       
@@ -23,22 +20,16 @@ describe('Summoner Factory', () => {
 
     it('should generate summoner with custom options', () => {
       const customOptions = {
-        accountId: 'custom-account-123',
         profileIconId: 15,
         revisionDate: 1640995200000,
-        name: 'CustomPlayer',
-        id: 'custom-id-456',
         puuid: 'custom-puuid-789',
         summonerLevel: 100
       };
       
       const summoner = makeSummoner(customOptions);
       
-      expect(summoner.accountId).toBe(customOptions.accountId);
       expect(summoner.profileIconId).toBe(customOptions.profileIconId);
       expect(summoner.revisionDate).toBe(customOptions.revisionDate);
-      expect(summoner.name).toBe(customOptions.name);
-      expect(summoner.id).toBe(customOptions.id);
       expect(summoner.puuid).toBe(customOptions.puuid);
       expect(summoner.summonerLevel).toBe(customOptions.summonerLevel);
     });
@@ -47,8 +38,6 @@ describe('Summoner Factory', () => {
       const summoner1 = makeSummoner();
       const summoner2 = makeSummoner();
       
-      expect(summoner1.accountId).not.toBe(summoner2.accountId);
-      expect(summoner1.name).not.toBe(summoner2.name);
       expect(summoner1.puuid).not.toBe(summoner2.puuid);
     });
   });
@@ -61,8 +50,6 @@ describe('Summoner Factory', () => {
       expect(summoners).toHaveLength(count);
       summoners.forEach(summoner => {
         expect(summoner).toBeDefined();
-        expect(summoner.accountId).toBeDefined();
-        expect(summoner.name).toBeDefined();
         expect(summoner.puuid).toBeDefined();
         expect(summoner.summonerLevel).toBeDefined();
       });

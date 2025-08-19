@@ -50,6 +50,7 @@ export function makeActiveGame(options: MakeActiveGameOptions = {}): CurrentGame
         perkSubStyle: faker.number.int({ min: 8000, max: 9000 }),
       },
     })),
+    gameCustomizationObjects: [],
   };
 }
 

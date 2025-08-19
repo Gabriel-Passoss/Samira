@@ -100,15 +100,22 @@ describe('DataDragonService', () => {
     it('should fetch champions successfully', async () => {
       const mockChampions = {
         'Aatrox': {
+          version: '13.1.1',
           id: 'Aatrox',
           key: '266',
           name: 'Aatrox',
           title: 'the Darkin Blade',
-          image: { full: 'Aatrox.png', sprite: 'champion0.png', group: 'champion' },
-          // These fields are optional in the API response
-          skins: [],
-          spells: [],
-          passive: { name: '', description: '', image: { full: '', sprite: '', group: '' } },
+          blurb: 'Once honored defenders of Shurima against the Void, Aatrox and his brethren would eventually become an even greater threat to Runeterra.',
+          image: { full: 'Aatrox.png', sprite: 'champion0.png', group: 'champion', x: 0, y: 0, w: 48, h: 48 },
+          tags: ['Fighter', 'Tank'],
+          partype: 'Blood Well',
+          info: { attack: 8, defense: 4, magic: 3 },
+          stats: {
+            hp: 580, hpperlevel: 90, mp: 0, mpperlevel: 0, movespeed: 345,
+            armor: 38, armorperlevel: 3.25, spellblock: 32, spellblockperlevel: 1.25,
+            attackrange: 175, hpregen: 3, hpregenperlevel: 1, mpregen: 0, mpregenperlevel: 0,
+            crit: 0, critperlevel: 0, attackdamage: 60, attackdamageperlevel: 5, attackspeedperlevel: 2.5, attackspeed: 0.651
+          }
         },
       };
       
@@ -135,10 +142,46 @@ describe('DataDragonService', () => {
         key: '266',
         name: 'Aatrox',
         title: 'the Darkin Blade',
-        image: { full: 'Aatrox.png', sprite: 'champion0.png', group: 'champion' },
-        skins: [],
-        spells: [],
-        passive: { name: '', description: '', image: { full: '', sprite: '', group: '' } },
+        blurb: 'Once honored defenders of Shurima against the Void, Aatrox and his brethren would eventually become an even greater threat to Runeterra.',
+        tags: ['Fighter', 'Tank'],
+        partype: 'Blood Well',
+        info: { attack: 8, defense: 4, magic: 3, difficulty: 4 },
+        image: { full: 'Aatrox.png', sprite: 'champion0.png', group: 'champion', x: 0, y: 0, w: 48, h: 48 },
+        stats: {
+          hp: 580, hpperlevel: 90, mp: 0, mpperlevel: 0, movespeed: 345,
+          armor: 38, armorperlevel: 3.25, spellblock: 32, spellblockperlevel: 1.25,
+          attackrange: 175, hpregen: 3, hpregenperlevel: 1, mpregen: 0, mpregenperlevel: 0,
+          crit: 0, critperlevel: 0, attackdamage: 60, attackdamageperlevel: 5, attackspeedperlevel: 2.5, attackspeed: 0.651
+        },
+        skins: [
+          { id: '266000', num: 0, name: 'Aatrox', chromas: false }
+        ],
+        lore: 'Aatrox is a legendary warrior, one of only five that remain of an ancient race known as the Darkin.',
+        allytips: ['Use Umbral Dash while casting The Darkin Blade to increase your chances of hitting the enemy.'],
+        enemytips: ['Aatrox\'s Infernal Chains are easier to escape when running towards the sides or at Aatrox.'],
+        spells: [
+          {
+            id: 'AatroxQ',
+            name: 'The Darkin Blade',
+            description: 'Aatrox slams his greatsword down.',
+            tooltip: 'Aatrox slams his greatsword down, dealing physical damage.',
+            leveltip: { label: ['Damage'], effect: ['10/30/50/70/90'] },
+            maxrank: 5,
+            cooldown: [14, 13, 12, 11, 10],
+            cooldownBurn: '14/13/12/11/10',
+            cost: [0],
+            costBurn: '0',
+            effect: [[0], [0], [0], [0], [0]],
+            effectBurn: ['0', '0', '0', '0', '0'],
+            costType: 'No Cost',
+            maxammo: '-1',
+            range: [0],
+            rangeBurn: '0',
+            image: { full: 'AatroxQ.png', sprite: 'spell0.png', group: 'spell', x: 0, y: 0, w: 48, h: 48 },
+            resource: 'No Cost'
+          }
+        ],
+        passive: { name: 'Deathbringer Stance', description: 'Periodically, Aatrox\'s next basic attack deals bonus physical damage.', image: { full: 'Aatrox_Passive.png', sprite: 'passive0.png', group: 'passive', x: 0, y: 0, w: 48, h: 48 } }
       };
       
       mockHttpClient.get.mockResolvedValue(right({ 
@@ -163,9 +206,12 @@ describe('DataDragonService', () => {
         '1001': {
           name: 'Boots of Speed',
           description: 'Slightly increases Movement Speed',
-          image: { full: '1001.png', sprite: 'item0.png', group: 'item' },
-          gold: { base: 300, total: 300, sell: 210 },
+          plaintext: 'Slightly increases Movement Speed',
+          image: { full: '1001.png', sprite: 'item0.png', group: 'item', x: 0, y: 0, w: 48, h: 48 },
+          gold: { base: 300, purchasable: true, total: 300, sell: 210 },
           tags: ['Boots'],
+          maps: { '11': true, '12': true, '21': true, '22': true },
+          stats: {}
         },
       };
       
@@ -190,9 +236,12 @@ describe('DataDragonService', () => {
       const mockItem = {
         name: 'Boots of Speed',
         description: 'Slightly increases Movement Speed',
-        image: { full: '1001.png', sprite: 'item0.png', group: 'item' },
-        gold: { base: 300, total: 300, sell: 210 },
+        plaintext: 'Slightly increases Movement Speed',
+        image: { full: '1001.png', sprite: 'item0.png', group: 'item', x: 0, y: 0, w: 48, h: 48 },
+        gold: { base: 300, purchasable: true, total: 300, sell: 210 },
         tags: ['Boots'],
+        maps: { '11': true, '12': true, '21': true, '22': true },
+        stats: {}
       };
       
       mockHttpClient.get.mockResolvedValue(right({ 
@@ -277,9 +326,22 @@ describe('DataDragonService', () => {
           name: 'Flash',
           description: 'Teleports your champion a short distance toward your cursor\'s location.',
           tooltip: 'Teleports your champion a short distance toward your cursor\'s location.',
-          image: { full: 'SummonerFlash.png', sprite: 'spell0.png', group: 'spell' },
+          maxrank: 1,
           cooldown: [300],
+          cooldownBurn: '300',
           cost: [0],
+          costBurn: '0',
+          effect: [[0]],
+          effectBurn: ['0'],
+          key: '4',
+          summonerLevel: 7,
+          modes: ['NexusBlitz', 'SummonersRift', 'HowlingAbyss', 'Tutorial'],
+          costType: 'No Cost',
+          maxammo: '-1',
+          range: [0],
+          rangeBurn: '0',
+          image: { full: 'SummonerFlash.png', sprite: 'spell0.png', group: 'spell', x: 0, y: 0, w: 48, h: 48 },
+          resource: 'No Cost'
         },
       };
       

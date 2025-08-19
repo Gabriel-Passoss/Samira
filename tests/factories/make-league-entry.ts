@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { LeagueEntry } from '../../src/types';
+import { LeagueEntry, Tier, Rank } from '../../src/types';
 
 export interface MakeLeagueEntryOptions {
   leagueId?: string;
@@ -7,8 +7,8 @@ export interface MakeLeagueEntryOptions {
   summonerId?: string;
   summonerName?: string;
   queueType?: string;
-  tier?: string;
-  rank?: string;
+  tier?: Tier;
+  rank?: Rank;
   leaguePoints?: number;
   wins?: number;
   losses?: number;
@@ -55,7 +55,7 @@ export function makeLeagueEntry(options: MakeLeagueEntryOptions = {}): LeagueEnt
     miniSeriesProgress = faker.helpers.arrayElement(['W', 'L', 'N', 'WWN', 'LLN', 'WLN']),
   } = options;
 
-  // Challenger, Grandmaster, and Master don't have ranks
+  // Note: In real LoL data, Master+ tiers don't have ranks
   const finalRank = ['CHALLENGER', 'GRANDMASTER', 'MASTER'].includes(tier) ? '' : rank;
 
   const baseEntry: LeagueEntry = {
@@ -150,7 +150,6 @@ export function makeLeagueEntriesWithDifferentTiers(): LeagueEntry[] {
     }),
     makeLeagueEntry({
       tier: 'CHALLENGER',
-      rank: '', // Challenger has no rank
       leaguePoints: 1250,
       wins: 150,
       losses: 50,
