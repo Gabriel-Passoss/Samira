@@ -1,7 +1,12 @@
-import { ENDPOINTS } from "../constants";
-import { CurrentGameSchema, FeaturedGamesSchema, type CurrentGame, type FeaturedGames } from "../types";
-import { left, right, type Either } from "../types/either";
-import type { ApiError, HttpClient } from "../utils/httpClient";
+import { ENDPOINTS } from '../constants';
+import {
+  CurrentGameSchema,
+  FeaturedGamesSchema,
+  type CurrentGame,
+  type FeaturedGames,
+} from '../types';
+import { left, right, type Either } from '../types/either';
+import type { ApiError, HttpClient } from '../utils/httpClient';
 
 export class SpectatorService {
   constructor(private readonly httpClient: HttpClient) {}

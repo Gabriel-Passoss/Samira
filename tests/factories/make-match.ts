@@ -22,7 +22,7 @@ export function makeMatch(options: MakeMatchOptions = {}): Match {
     participantsCount = 10,
   } = options;
 
-  const gameEndTimestamp = gameCreation + (gameDuration * 1000);
+  const gameEndTimestamp = gameCreation + gameDuration * 1000;
   const gameStartTimestamp = gameCreation + 60000; // 1 minute after creation
 
   // Generate win values for teams first
@@ -55,7 +55,13 @@ export function makeMatch(options: MakeMatchOptions = {}): Match {
     gameEndedInSurrender: faker.datatype.boolean(),
     goldEarned: faker.number.int({ min: 5000, max: 25000 }),
     goldSpent: faker.number.int({ min: 4000, max: 22000 }),
-    individualPosition: faker.helpers.arrayElement(['TOP', 'JUNGLE', 'MIDDLE', 'BOTTOM', 'UTILITY']),
+    individualPosition: faker.helpers.arrayElement([
+      'TOP',
+      'JUNGLE',
+      'MIDDLE',
+      'BOTTOM',
+      'UTILITY',
+    ]),
     inhibitorKills: faker.number.int({ min: 0, max: 3 }),
     inhibitorTakedowns: faker.number.int({ min: 0, max: 3 }),
     inhibitorsLost: faker.number.int({ min: 0, max: 3 }),
@@ -165,7 +171,7 @@ export function makeMatch(options: MakeMatchOptions = {}): Match {
     win: index < 5 ? team100Win : team200Win, // Ensure team consistency
   }));
 
-  const puuids = participants.map(p => p.puuid);
+  const puuids = participants.map((p) => p.puuid);
 
   const teams = [
     {
@@ -268,9 +274,12 @@ export function makeMatchArray(count: number, options: MakeMatchOptions = {}): M
   return Array.from({ length: count }, () => makeMatch(options));
 }
 
-export function makeMatchWithCustomParticipants(participants: any[], options: MakeMatchOptions = {}): Match {
+export function makeMatchWithCustomParticipants(
+  participants: any[],
+  options: MakeMatchOptions = {},
+): Match {
   const match = makeMatch(options);
   match.info.participants = participants;
-  match.metadata.participants = participants.map(p => p.puuid);
+  match.metadata.participants = participants.map((p) => p.puuid);
   return match;
 }

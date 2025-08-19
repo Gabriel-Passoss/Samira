@@ -13,15 +13,15 @@ describe('DataDragonService', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // Create a mock HttpClient instance
     mockHttpClient = {
       get: vi.fn(),
     };
-    
+
     // Mock the HttpClient constructor to return our mock
     (HttpClient as any).mockImplementation(() => mockHttpClient);
-    
+
     // Create the service with the mocked client and a specific version to avoid version fetching
     dataDragonService = new DataDragonService(mockHttpClient, { version: '13.1.1' });
   });
@@ -44,7 +44,7 @@ describe('DataDragonService', () => {
         language: 'pt_BR',
         includeFullUrl: true,
       });
-      
+
       expect(customService.getConfig()).toEqual({
         version: '13.1.1',
         language: 'pt_BR',
@@ -57,15 +57,17 @@ describe('DataDragonService', () => {
   describe('getLatestVersion', () => {
     it('should fetch latest version successfully', async () => {
       const mockVersions = ['13.1.1', '13.1.2', '13.2.1'];
-      mockHttpClient.get.mockResolvedValue(right({ 
-        data: mockVersions, 
-        status: 200, 
-        statusText: 'OK', 
-        headers: {} 
-      }));
+      mockHttpClient.get.mockResolvedValue(
+        right({
+          data: mockVersions,
+          status: 200,
+          statusText: 'OK',
+          headers: {},
+        }),
+      );
 
       const result = await dataDragonService.getLatestVersion();
-      
+
       expect(result.isRight()).toBe(true);
       if (result.isRight()) {
         expect(result.value).toEqual(mockVersions);
@@ -76,22 +78,24 @@ describe('DataDragonService', () => {
   describe('latest version initialization', () => {
     it('should handle latest version initialization correctly', async () => {
       const latestService = new DataDragonService(mockHttpClient, { version: 'latest' });
-      
+
       // Mock the version fetching
       const mockVersions = ['13.1.1', '13.1.2', '13.2.1'];
-      mockHttpClient.get.mockResolvedValue(right({ 
-        data: mockVersions, 
-        status: 200, 
-        statusText: 'OK', 
-        headers: {} 
-      }));
+      mockHttpClient.get.mockResolvedValue(
+        right({
+          data: mockVersions,
+          status: 200,
+          statusText: 'OK',
+          headers: {},
+        }),
+      );
 
       // This should trigger version fetching
       const result = await latestService.getChampion('Aatrox');
-      
+
       // The service should now have fetched the latest version
       expect(mockHttpClient.get).toHaveBeenCalledWith(
-        'https://ddragon.leagueoflegends.com/api/versions.json'
+        'https://ddragon.leagueoflegends.com/api/versions.json',
       );
     });
   });
@@ -99,7 +103,7 @@ describe('DataDragonService', () => {
   describe('getChampions', () => {
     it('should fetch champions successfully', async () => {
       const mockChampions = {
-        'Aatrox': {
+        Aatrox: {
           id: 'Aatrox',
           key: '266',
           name: 'Aatrox',
@@ -111,16 +115,18 @@ describe('DataDragonService', () => {
           passive: { name: '', description: '', image: { full: '', sprite: '', group: '' } },
         },
       };
-      
-      mockHttpClient.get.mockResolvedValue(right({ 
-        data: { data: mockChampions }, 
-        status: 200, 
-        statusText: 'OK', 
-        headers: {} 
-      }));
+
+      mockHttpClient.get.mockResolvedValue(
+        right({
+          data: { data: mockChampions },
+          status: 200,
+          statusText: 'OK',
+          headers: {},
+        }),
+      );
 
       const result = await dataDragonService.getChampions();
-      
+
       expect(result.isRight()).toBe(true);
       if (result.isRight()) {
         expect(result.value).toEqual(mockChampions);
@@ -140,16 +146,18 @@ describe('DataDragonService', () => {
         spells: [],
         passive: { name: '', description: '', image: { full: '', sprite: '', group: '' } },
       };
-      
-      mockHttpClient.get.mockResolvedValue(right({ 
-        data: { data: { 'Aatrox': mockChampion } }, 
-        status: 200, 
-        statusText: 'OK', 
-        headers: {} 
-      }));
+
+      mockHttpClient.get.mockResolvedValue(
+        right({
+          data: { data: { Aatrox: mockChampion } },
+          status: 200,
+          statusText: 'OK',
+          headers: {},
+        }),
+      );
 
       const result = await dataDragonService.getChampion('Aatrox');
-      
+
       expect(result.isRight()).toBe(true);
       if (result.isRight()) {
         expect(result.value).toEqual(mockChampion);
@@ -168,16 +176,18 @@ describe('DataDragonService', () => {
           tags: ['Boots'],
         },
       };
-      
-      mockHttpClient.get.mockResolvedValue(right({ 
-        data: { data: mockItems }, 
-        status: 200, 
-        statusText: 'OK', 
-        headers: {} 
-      }));
+
+      mockHttpClient.get.mockResolvedValue(
+        right({
+          data: { data: mockItems },
+          status: 200,
+          statusText: 'OK',
+          headers: {},
+        }),
+      );
 
       const result = await dataDragonService.getItems();
-      
+
       expect(result.isRight()).toBe(true);
       if (result.isRight()) {
         expect(result.value).toEqual(mockItems);
@@ -194,16 +204,18 @@ describe('DataDragonService', () => {
         gold: { base: 300, total: 300, sell: 210 },
         tags: ['Boots'],
       };
-      
-      mockHttpClient.get.mockResolvedValue(right({ 
-        data: { data: { '1001': mockItem } }, 
-        status: 200, 
-        statusText: 'OK', 
-        headers: {} 
-      }));
+
+      mockHttpClient.get.mockResolvedValue(
+        right({
+          data: { data: { '1001': mockItem } },
+          status: 200,
+          statusText: 'OK',
+          headers: {},
+        }),
+      );
 
       const result = await dataDragonService.getItem('1001');
-      
+
       expect(result.isRight()).toBe(true);
       if (result.isRight()) {
         expect(result.value).toEqual(mockItem);
@@ -211,15 +223,17 @@ describe('DataDragonService', () => {
     });
 
     it('should return error for non-existent item', async () => {
-      mockHttpClient.get.mockResolvedValue(right({ 
-        data: { data: {} }, 
-        status: 200, 
-        statusText: 'OK', 
-        headers: {} 
-      }));
+      mockHttpClient.get.mockResolvedValue(
+        right({
+          data: { data: {} },
+          status: 200,
+          statusText: 'OK',
+          headers: {},
+        }),
+      );
 
       const result = await dataDragonService.getItem('99999');
-      
+
       expect(result.isLeft()).toBe(true);
       if (result.isLeft()) {
         expect(result.value.status).toBe(404);
@@ -244,24 +258,28 @@ describe('DataDragonService', () => {
                   key: 'PressTheAttack',
                   name: 'Press the Attack',
                   icon: 'perk-images/Styles/Precision/PressTheAttack/PressTheAttack.png',
-                  shortDesc: 'Basic attacks against a champion apply a stack for 4 seconds. At 3 stacks, the target takes 40-180 bonus adaptive damage.',
-                  longDesc: 'Basic attacks against a champion apply a stack for 4 seconds. At 3 stacks, the target takes 40-180 bonus adaptive damage.',
+                  shortDesc:
+                    'Basic attacks against a champion apply a stack for 4 seconds. At 3 stacks, the target takes 40-180 bonus adaptive damage.',
+                  longDesc:
+                    'Basic attacks against a champion apply a stack for 4 seconds. At 3 stacks, the target takes 40-180 bonus adaptive damage.',
                 },
               ],
             },
           ],
         },
       ];
-      
-      mockHttpClient.get.mockResolvedValue(right({ 
-        data: mockRunes, 
-        status: 200, 
-        statusText: 'OK', 
-        headers: {} 
-      }));
+
+      mockHttpClient.get.mockResolvedValue(
+        right({
+          data: mockRunes,
+          status: 200,
+          statusText: 'OK',
+          headers: {},
+        }),
+      );
 
       const result = await dataDragonService.getRunes();
-      
+
       expect(result.isRight()).toBe(true);
       if (result.isRight()) {
         expect(result.value).toEqual(mockRunes);
@@ -272,26 +290,28 @@ describe('DataDragonService', () => {
   describe('getSummonerSpells', () => {
     it('should fetch summoner spells successfully', async () => {
       const mockSpells = {
-        'SummonerFlash': {
+        SummonerFlash: {
           id: 'SummonerFlash',
           name: 'Flash',
-          description: 'Teleports your champion a short distance toward your cursor\'s location.',
-          tooltip: 'Teleports your champion a short distance toward your cursor\'s location.',
+          description: "Teleports your champion a short distance toward your cursor's location.",
+          tooltip: "Teleports your champion a short distance toward your cursor's location.",
           image: { full: 'SummonerFlash.png', sprite: 'spell0.png', group: 'spell' },
           cooldown: [300],
           cost: [0],
         },
       };
-      
-      mockHttpClient.get.mockResolvedValue(right({ 
-        data: { data: mockSpells }, 
-        status: 200, 
-        statusText: 'OK', 
-        headers: {} 
-      }));
+
+      mockHttpClient.get.mockResolvedValue(
+        right({
+          data: { data: mockSpells },
+          status: 200,
+          statusText: 'OK',
+          headers: {},
+        }),
+      );
 
       const result = await dataDragonService.getSummonerSpells();
-      
+
       expect(result.isRight()).toBe(true);
       if (result.isRight()) {
         expect(result.value).toEqual(mockSpells);
@@ -302,26 +322,32 @@ describe('DataDragonService', () => {
   describe('asset URL methods', () => {
     it('should return asset path when includeFullUrl is false', () => {
       const service = new DataDragonService(mockHttpClient, { includeFullUrl: false });
-      
+
       expect(service.getChampionImageUrl('Aatrox')).toBe('img/champion/Aatrox.png');
       expect(service.getItemImageUrl('1001')).toBe('img/item/1001.png');
       expect(service.getProfileIconUrl(1)).toBe('img/profileicon/1.png');
     });
 
     it('should return full URL when includeFullUrl is true', () => {
-      const service = new DataDragonService(mockHttpClient, { 
+      const service = new DataDragonService(mockHttpClient, {
         includeFullUrl: true,
-        version: '13.1.1'
+        version: '13.1.1',
       });
-      
-      expect(service.getChampionImageUrl('Aatrox')).toBe('https://ddragon.leagueoflegends.com/cdn/13.1.1/img/champion/Aatrox.png');
-      expect(service.getItemImageUrl('1001')).toBe('https://ddragon.leagueoflegends.com/cdn/13.1.1/img/item/1001.png');
-      expect(service.getProfileIconUrl(1)).toBe('https://ddragon.leagueoflegends.com/cdn/13.1.1/img/profileicon/1.png');
+
+      expect(service.getChampionImageUrl('Aatrox')).toBe(
+        'https://ddragon.leagueoflegends.com/cdn/13.1.1/img/champion/Aatrox.png',
+      );
+      expect(service.getItemImageUrl('1001')).toBe(
+        'https://ddragon.leagueoflegends.com/cdn/13.1.1/img/item/1001.png',
+      );
+      expect(service.getProfileIconUrl(1)).toBe(
+        'https://ddragon.leagueoflegends.com/cdn/13.1.1/img/profileicon/1.png',
+      );
     });
 
     it('should handle champion skins correctly', () => {
       const service = new DataDragonService(mockHttpClient, { includeFullUrl: false });
-      
+
       expect(service.getChampionImageUrl('Aatrox')).toBe('img/champion/Aatrox.png');
       expect(service.getChampionImageUrl('Aatrox', '0')).toBe('img/champion/Aatrox.png');
       expect(service.getChampionImageUrl('Aatrox', '1')).toBe('img/champion/Aatrox_1.png');
@@ -329,16 +355,20 @@ describe('DataDragonService', () => {
 
     it('should handle champion splash art correctly', () => {
       const service = new DataDragonService(mockHttpClient, { includeFullUrl: false });
-      
+
       expect(service.getChampionSplashUrl('Aatrox')).toBe('img/champion/splash/Aatrox.png');
       expect(service.getChampionSplashUrl('Aatrox', '1')).toBe('img/champion/splash/Aatrox_1.png');
     });
 
     it('should handle champion loading screen correctly', () => {
       const service = new DataDragonService(mockHttpClient, { includeFullUrl: false });
-      
-      expect(service.getChampionLoadingUrl('Aatrox')).toBe('https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Aatrox_0.jpg');
-      expect(service.getChampionLoadingUrl('Aatrox', '1')).toBe('https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Aatrox_1.jpg');
+
+      expect(service.getChampionLoadingUrl('Aatrox')).toBe(
+        'https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Aatrox_0.jpg',
+      );
+      expect(service.getChampionLoadingUrl('Aatrox', '1')).toBe(
+        'https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Aatrox_1.jpg',
+      );
     });
   });
 
@@ -349,7 +379,7 @@ describe('DataDragonService', () => {
         language: 'pt_BR',
         includeFullUrl: true,
       });
-      
+
       expect(dataDragonService.getConfig()).toEqual({
         version: '13.2.1',
         language: 'pt_BR',

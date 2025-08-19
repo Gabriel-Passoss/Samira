@@ -9,13 +9,13 @@ config({ path: resolve(process.cwd(), '.env') });
 beforeAll(() => {
   // Set test environment variables
   process.env.NODE_ENV = 'test';
-  
+
   // Ensure RIOT_API_KEY is available for tests
   if (!process.env.RIOT_API_KEY) {
     console.warn('⚠️  RIOT_API_KEY not found in .env file. Using test API key.');
     process.env.RIOT_API_KEY = 'test-api-key-for-testing';
   }
-  
+
   // Mock console methods to reduce noise in tests
   // global.console = {
   //   ...console,

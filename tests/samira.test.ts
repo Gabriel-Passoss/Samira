@@ -60,7 +60,7 @@ describe('Samira', () => {
         platform: PLATFORMS.NA1,
         region: REGIONS.AMERICAS,
       });
-      
+
       // Modifying returned config should not affect original
       config.apiKey = 'modified';
       expect(samira.getConfig().apiKey).toBe(mockApiKey);
@@ -80,7 +80,7 @@ describe('Samira', () => {
       it('should return a copy of platforms object', () => {
         const platforms = Samira.getAvailablePlatforms();
         const originalCount = Object.keys(platforms).length;
-        
+
         // Modifying returned object should not affect original
         delete (platforms as any).NA1;
         expect(Object.keys(Samira.getAvailablePlatforms()).length).toBe(originalCount);

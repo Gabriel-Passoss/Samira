@@ -15,15 +15,15 @@ describe('SpectatorService', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // Create a mock HttpClient instance
     mockHttpClient = {
       get: vi.fn(),
     };
-    
+
     // Mock the HttpClient constructor to return our mock
     (HttpClient as any).mockImplementation(() => mockHttpClient);
-    
+
     // Create the service with the mocked client
     spectatorService = new SpectatorService(mockHttpClient);
   });
@@ -38,7 +38,9 @@ describe('SpectatorService', () => {
     it('should fetch active game by puuid successfully', async () => {
       const puuid = '1234';
       const mockActiveGame = makeActiveGame();
-      mockHttpClient.get.mockResolvedValue(right({ data: mockActiveGame, status: 200, statusText: 'OK', headers: {} }));
+      mockHttpClient.get.mockResolvedValue(
+        right({ data: mockActiveGame, status: 200, statusText: 'OK', headers: {} }),
+      );
 
       const result = await spectatorService.getActiveGameByPuuid(puuid);
       expect(result.isRight()).toBe(true);
@@ -54,7 +56,7 @@ describe('SpectatorService', () => {
       mockHttpClient.get.mockResolvedValue(left(error));
 
       const result = await spectatorService.getActiveGameByPuuid(puuid);
-      
+
       expect(result.isLeft()).toBe(true);
       expect(result.value).toEqual(error);
     });

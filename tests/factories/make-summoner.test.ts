@@ -6,7 +6,7 @@ describe('Summoner Factory', () => {
   describe('makeSummoner', () => {
     it('should generate a valid summoner', () => {
       const summoner = makeSummoner();
-      
+
       expect(summoner).toBeDefined();
       expect(summoner.accountId).toBeDefined();
       expect(summoner.profileIconId).toBeDefined();
@@ -15,7 +15,7 @@ describe('Summoner Factory', () => {
       expect(summoner.id).toBeDefined();
       expect(summoner.puuid).toBeDefined();
       expect(summoner.summonerLevel).toBeDefined();
-      
+
       // Validate against Zod schema
       const result = SummonerSchema.safeParse(summoner);
       expect(result.success).toBe(true);
@@ -29,11 +29,11 @@ describe('Summoner Factory', () => {
         name: 'CustomPlayer',
         id: 'custom-id-456',
         puuid: 'custom-puuid-789',
-        summonerLevel: 100
+        summonerLevel: 100,
       };
-      
+
       const summoner = makeSummoner(customOptions);
-      
+
       expect(summoner.accountId).toBe(customOptions.accountId);
       expect(summoner.profileIconId).toBe(customOptions.profileIconId);
       expect(summoner.revisionDate).toBe(customOptions.revisionDate);
@@ -46,7 +46,7 @@ describe('Summoner Factory', () => {
     it('should generate different summoners on multiple calls', () => {
       const summoner1 = makeSummoner();
       const summoner2 = makeSummoner();
-      
+
       expect(summoner1.accountId).not.toBe(summoner2.accountId);
       expect(summoner1.name).not.toBe(summoner2.name);
       expect(summoner1.puuid).not.toBe(summoner2.puuid);
@@ -57,9 +57,9 @@ describe('Summoner Factory', () => {
     it('should generate array of summoners', () => {
       const count = 5;
       const summoners = makeSummonerArray(count);
-      
+
       expect(summoners).toHaveLength(count);
-      summoners.forEach(summoner => {
+      summoners.forEach((summoner) => {
         expect(summoner).toBeDefined();
         expect(summoner.accountId).toBeDefined();
         expect(summoner.name).toBeDefined();
@@ -72,9 +72,9 @@ describe('Summoner Factory', () => {
       const count = 3;
       const customOptions = { summonerLevel: 50 };
       const summoners = makeSummonerArray(count, customOptions);
-      
+
       expect(summoners).toHaveLength(count);
-      summoners.forEach(summoner => {
+      summoners.forEach((summoner) => {
         expect(summoner.summonerLevel).toBe(customOptions.summonerLevel);
       });
     });
@@ -83,14 +83,14 @@ describe('Summoner Factory', () => {
   describe('data validation', () => {
     it('should generate profile icon IDs within valid range', () => {
       const summoner = makeSummoner();
-      
+
       expect(summoner.profileIconId).toBeGreaterThanOrEqual(1);
       expect(summoner.profileIconId).toBeLessThanOrEqual(30);
     });
 
     it('should generate summoner levels within valid range', () => {
       const summoner = makeSummoner();
-      
+
       expect(summoner.summonerLevel).toBeGreaterThanOrEqual(1);
       expect(summoner.summonerLevel).toBeLessThanOrEqual(500);
     });
@@ -98,8 +98,8 @@ describe('Summoner Factory', () => {
     it('should generate recent revision dates', () => {
       const summoner = makeSummoner();
       const now = Date.now();
-      const oneYearAgo = now - (365 * 24 * 60 * 60 * 1000);
-      
+      const oneYearAgo = now - 365 * 24 * 60 * 60 * 1000;
+
       expect(summoner.revisionDate).toBeLessThanOrEqual(now);
       expect(summoner.revisionDate).toBeGreaterThan(oneYearAgo);
     });
