@@ -1,7 +1,7 @@
 import z from 'zod';
 import { AssetImageSchema } from './assetImage';
 
-export const ChampionsSchema = z.object({
+export const ChampionResumeSchema = z.object({
   version: z.string(),
   id: z.string(),
   key: z.string(),
@@ -40,4 +40,4 @@ export const ChampionsSchema = z.object({
   }),
 });
 
-export type Champions = z.infer<typeof ChampionsSchema>;
+export type ChampionResume = z.infer<typeof ChampionResumeSchema>;

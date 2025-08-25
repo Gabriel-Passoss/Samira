@@ -3,17 +3,16 @@ import { Either, left, right } from '../types/either';
 import { ApiError } from '../utils/httpClient';
 import {
   DataDragonConfig,
-  Champion,
   ItemAsset,
   RuneAsset,
   SummonerSpellAsset,
-  ChampionSchema,
   ItemAssetSchema,
   RuneAssetSchema,
   SummonerSpellAssetSchema,
 } from '../types';
 import { z } from 'zod';
-import { ChampionsSchema, type Champions } from '../types/dataDragon/champions';
+import type { DataDragonCache } from '../types/dataDragon/cache';
+import { ChampionResumeSchema, type ChampionResume } from '../types/dataDragon/championResume';
 
 export class DataDragonService {
   private client: HttpClient;
@@ -22,6 +21,9 @@ export class DataDragonService {
   private version: string;
   private language: string;
   private isVersionFetched: boolean = false;
+
+  private initialized: boolean = false;
+  private cache: DataDragonCache;
 
   constructor(client: HttpClient, config: DataDragonConfig = {}) {
     this.client = client;
@@ -35,11 +37,42 @@ export class DataDragonService {
     this.baseUrl = this.config.baseUrl!;
     this.language = this.config.language!;
 
-    // Set initial version - will be updated if 'latest' is specified
     if (this.config.version === 'latest') {
-      this.version = 'latest'; // Will be fetched on first use
+      this.version = 'latest';
     } else {
       this.version = this.config.version!;
+    }
+
+    this.initialized = false;
+    this.cache = {
+      champions: null,
+      items: null,
+      runes: null,
+      summonerSpells: null,
+    };
+  }
+
+  /**
+   * Initialize the Data Dragon service
+   * This will fetch all the data and cache it
+   */
+  async init(): Promise<void> {
+    if (!this.initialized) {
+      const [championsResult, itemsResult, runesResult, spellsResult] = await Promise.all([
+        this.getChampions(),
+        this.getItems(),
+        this.getRunes(),
+        this.getSummonerSpells(),
+      ]);
+
+      this.cache = {
+        champions: championsResult.isRight() ? championsResult.value : null,
+        items: itemsResult.isRight() ? itemsResult.value : null,
+        runes: runesResult.isRight() ? runesResult.value : null,
+        summonerSpells: spellsResult.isRight() ? spellsResult.value : null,
+      };
+
+      this.initialized = true;
     }
   }
 
@@ -47,7 +80,6 @@ export class DataDragonService {
    * Ensure the service is ready with the correct version
    */
   private async ensureVersionReady(): Promise<void> {
-    // If version is 'latest' and we haven't fetched it yet, fetch it now
     if (this.config.version === 'latest' && !this.isVersionFetched) {
       await this.fetchAndSetLatestVersion();
     }
@@ -101,10 +133,10 @@ export class DataDragonService {
   /**
    * Get all champions data
    */
-  async getChampions(version?: string): Promise<Either<ApiError, Record<string, Champions>>> {
+  async getChampions(version?: string): Promise<Either<ApiError, Record<string, ChampionResume>>> {
     const ver = version || this.version;
     const url = `${this.baseUrl}/cdn/${ver}/data/${this.language}/champion.json`;
-    const response = await this.client.get<{ data: Record<string, Champions> }>(url);
+    const response = await this.client.get<{ data: Record<string, ChampionResume> }>(url);
 
     if (response.isLeft()) {
       return left(response.value);
@@ -112,7 +144,7 @@ export class DataDragonService {
 
     try {
       // Validate the response data with Zod
-      const champions = z.record(z.string(), ChampionsSchema).parse(response.value.data.data);
+      const champions = z.record(z.string(), ChampionResumeSchema).parse(response.value.data.data);
       return right(champions);
     } catch (error) {
       return left({
@@ -127,51 +159,18 @@ export class DataDragonService {
   /**
    * Get specific champion data
    */
-  async getChampion(championId: string, version?: string): Promise<Either<ApiError, Champion>> {
-    // Ensure version is ready if using 'latest'
-    await this.ensureVersionReady();
-
-    const ver = version || this.version;
-    const url = `${this.baseUrl}/cdn/${ver}/data/${this.language}/champion/${championId}.json`;
-    const response = await this.client.get<{ data: Record<string, Champion> }>(url);
-
-    if (response.isLeft()) {
-      return left(response.value);
+  getChampionResumeById(championId: number): ChampionResume {
+    if (!this.initialized || !this.cache.champions) {
+      throw new Error('Data Dragon service not initialized');
     }
 
-    try {
-      // Extract the champion data (the response has a nested structure)
-      const championData = response.value.data.data;
-      const championKey = Object.keys(championData)[0];
-
-      if (!championKey) {
-        return left({
-          status: 404,
-          statusText: 'Not Found',
-          message: `Champion ${championId} not found`,
-        });
+    for (const key in this.cache.champions) {
+      if (this.cache.champions[key]!.key === championId.toString()) {
+        return this.cache.champions[key]! as ChampionResume;
       }
-
-      const champion = championData[championKey];
-      if (!champion) {
-        return left({
-          status: 404,
-          statusText: 'Not Found',
-          message: `Champion ${championId} data is invalid`,
-        });
-      }
-
-      // Validate the champion data with Zod
-      const validatedChampion = ChampionSchema.parse(champion);
-      return right(validatedChampion);
-    } catch (error) {
-      return left({
-        status: 400,
-        statusText: 'Validation Error',
-        message: 'Champion data validation failed',
-        details: error,
-      });
     }
+
+    throw new Error(`Champion with id ${championId} doesn't exist!`);
   }
 
   /**
@@ -206,39 +205,18 @@ export class DataDragonService {
   /**
    * Get specific item data
    */
-  async getItem(itemId: string, version?: string): Promise<Either<ApiError, ItemAsset>> {
-    // Ensure version is ready if using 'latest'
-    await this.ensureVersionReady();
-
-    const ver = version || this.version;
-    const url = `${this.baseUrl}/cdn/${ver}/data/${this.language}/item.json`;
-    const response = await this.client.get<{ data: Record<string, ItemAsset> }>(url);
-
-    if (response.isLeft()) {
-      return left(response.value);
+  getItemById(itemId: number): ItemAsset {
+    if (!this.initialized || !this.cache.items) {
+      throw new Error('Data Dragon service not initialized');
     }
 
-    const item = response.value.data.data[itemId];
-    if (!item) {
-      return left({
-        status: 404,
-        statusText: 'Not Found',
-        message: `Item with ID ${itemId} not found`,
-      });
+    for (const key in this.cache.items) {
+      if (key === itemId.toString()) {
+        return this.cache.items[key]!;
+      }
     }
 
-    try {
-      // Validate the item data with Zod
-      const validatedItem = ItemAssetSchema.parse(item);
-      return right(validatedItem);
-    } catch (error) {
-      return left({
-        status: 400,
-        statusText: 'Validation Error',
-        message: 'Item data validation failed',
-        details: error,
-      });
-    }
+    throw new Error(`Item with id ${itemId} doesn't exist!`);
   }
 
   /**
@@ -270,6 +248,20 @@ export class DataDragonService {
     }
   }
 
+  getRuneTreeById(runeTreeId: number): RuneAsset {
+    if (!this.initialized || !this.cache.runes) {
+      throw new Error('Data Dragon service not initialized');
+    }
+
+    for (const key in this.cache.runes) {
+      if (this.cache.runes[key]!.id === runeTreeId) {
+        return this.cache.runes[key]! as RuneAsset;
+      }
+    }
+
+    throw new Error(`Rune with id ${runeTreeId} doesn't exist!`);
+  }
+
   /**
    * Get summoner spells data
    */
@@ -299,6 +291,20 @@ export class DataDragonService {
         details: error,
       });
     }
+  }
+
+  getSummonerSpellById(spellId: number): SummonerSpellAsset {
+    if (!this.initialized || !this.cache.summonerSpells) {
+      throw new Error('Data Dragon service not initialized');
+    }
+
+    for (const key in this.cache.summonerSpells) {
+      if (this.cache.summonerSpells[key]!.id === spellId.toString()) {
+        return this.cache.summonerSpells[key]! as SummonerSpellAsset;
+      }
+    }
+
+    throw new Error(`Summoner spell with id ${spellId} doesn't exist!`);
   }
 
   /**
@@ -333,8 +339,13 @@ export class DataDragonService {
   /**
    * Get rune image URL
    */
-  getRuneImageUrl(runeId: number): string {
-    const imagePath = `img/${runeId}.png`;
+  getRuneImageUrl(runeTree: string, runeId: number): string {
+    const imagePath = `img/perk-images/Styles/${runeTree}/${runeId}.png`;
+    return this.getAssetUrl(imagePath);
+  }
+
+  getRuneTreeImageUrl(runeTree: string): string {
+    const imagePath = `img/perk-images/Styles/${runeTree}.png`;
     return this.getAssetUrl(imagePath);
   }
 

@@ -84,30 +84,24 @@ describe('Data Dragon Service E2E', () => {
     });
   });
 
-  describe('getChampion', () => {
+  describe('getChampionById', () => {
     it('should fetch specific champion successfully', async () => {
-      const result = await samira.dataDragon.getChampion('Aatrox');
+      await samira.dataDragon.init();
+      const result = samira.dataDragon.getChampionResumeById(266);
 
-      expect(result.isRight()).toBe(true);
-      if (result.isRight()) {
-        const champion = result.value;
+      expect(result).toBeDefined();
+      if (result) {
+        const champion = result;
         expect(champion.id).toBe('Aatrox');
         expect(champion.name).toBe('Aatrox');
         expect(champion.title).toContain('Darkin');
         expect(champion.image).toBeDefined();
-        expect(champion.skins).toBeDefined();
-        expect(champion.spells).toBeDefined();
-        expect(champion.passive).toBeDefined();
       }
     });
 
     it('should handle non-existent champion gracefully', async () => {
-      const result = await samira.dataDragon.getChampion('NonExistentChampion');
-
-      expect(result.isLeft()).toBe(true);
-      if (result.isLeft()) {
-        expect(result.value.status).toBe(403);
-      }
+      await samira.dataDragon.init();
+      expect(() => samira.dataDragon.getChampionResumeById(999)).toThrow();
     });
   });
 
@@ -134,11 +128,13 @@ describe('Data Dragon Service E2E', () => {
 
   describe('getItem', () => {
     it('should fetch specific item successfully', async () => {
-      const result = await samira.dataDragon.getItem('1001'); // Boots of Speed
+      await samira.dataDragon.init();
 
-      expect(result.isRight()).toBe(true);
-      if (result.isRight()) {
-        const item = result.value;
+      const result = samira.dataDragon.getItemById(1001);
+
+      expect(result).toBeDefined();
+      if (result) {
+        const item = result;
         expect(item.name).toContain('Boots');
         expect(item.image).toBeDefined();
         expect(item.gold).toBeDefined();
@@ -165,6 +161,26 @@ describe('Data Dragon Service E2E', () => {
         expect(firstRune).toHaveProperty('icon');
         expect(firstRune).toHaveProperty('slots');
       }
+    });
+  });
+
+  describe('getRuneTreeById', () => {
+    it('should fetch specific rune successfully', async () => {
+      await samira.dataDragon.init();
+      const result = samira.dataDragon.getRuneTreeById(8100);
+
+      expect(result).toBeDefined();
+      if (result) {
+        const rune = result;
+        expect(rune.id).toBe(8100);
+        expect(rune.name).toBe('Domination');
+        expect(rune.icon).toBeDefined();
+      }
+    });
+
+    it('should handle non-existent rune gracefully', async () => {
+      await samira.dataDragon.init();
+      expect(() => samira.dataDragon.getRuneTreeById(999)).toThrow();
     });
   });
 
