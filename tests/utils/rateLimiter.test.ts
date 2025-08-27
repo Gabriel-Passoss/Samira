@@ -73,14 +73,6 @@ describe('RateLimiter', () => {
         dailyLimiter.recordRequest();
       }
 
-      // Debug: check the status
-      const status = dailyLimiter.getStatus();
-      console.log('Daily limit test status:', {
-        dailyRequests: status.dailyRequests,
-        requestsInWindow: status.requestsInWindow,
-        canMakeRequest: status.canMakeRequest,
-      });
-
       expect(dailyLimiter.canMakeRequest()).toBe(false);
 
       // Reset the rate limiter to simulate a new day

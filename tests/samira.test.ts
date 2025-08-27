@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { Samira, createSamira, createPlatformSamira, createRegionalSamira } from '../src/samira';
-import { PLATFORMS, REGIONS } from '../src/constants';
+import { Samira, regionToPlatform } from '../src/samira';
+import { PLATFORMS, REGIONS, type Region } from '../src/constants';
 
 describe('Samira', () => {
   let samira: Samira;
@@ -9,8 +9,7 @@ describe('Samira', () => {
   beforeEach(() => {
     samira = new Samira({
       apiKey: mockApiKey,
-      platform: PLATFORMS.NA1,
-      region: REGIONS.AMERICAS,
+      region: REGIONS.NA1,
     });
   });
 
@@ -18,19 +17,20 @@ describe('Samira', () => {
     it('should create a Samira instance with valid config', () => {
       expect(samira).toBeInstanceOf(Samira);
       expect(samira.getConfig().apiKey).toBe(mockApiKey);
-      expect(samira.getConfig().platform).toBe(PLATFORMS.NA1);
-      expect(samira.getConfig().region).toBe(REGIONS.AMERICAS);
+      expect(samira.getConfig().region).toBe(REGIONS.NA1);
     });
 
     it('should throw error for empty API key', () => {
-      expect(() => new Samira({ apiKey: '' })).toThrow('API key is required');
-      expect(() => new Samira({ apiKey: '   ' })).toThrow('API key is required');
+      expect(() => new Samira({ apiKey: '', region: REGIONS.NA1 })).toThrow('API key is required');
+      expect(() => new Samira({ apiKey: '   ', region: REGIONS.NA1 })).toThrow(
+        'API key is required',
+      );
     });
 
-    it('should set default platform and region when not provided', () => {
-      const defaultSamira = new Samira({ apiKey: mockApiKey });
-      expect(defaultSamira.getConfig().platform).toBe(PLATFORMS.NA1);
-      expect(defaultSamira.getConfig().region).toBe(REGIONS.AMERICAS);
+    it('should throw error for invalid region', () => {
+      expect(() => new Samira({ apiKey: mockApiKey, region: 'invalid-region' as Region })).toThrow(
+        "Region invalid-region doesn't exist!",
+      );
     });
   });
 
@@ -41,14 +41,8 @@ describe('Samira', () => {
       expect(samira.getConfig().apiKey).toBe(newApiKey);
     });
 
-    it('should update platform', () => {
-      const newPlatform = PLATFORMS.EUW1;
-      samira.updatePlatform(newPlatform);
-      expect(samira.getConfig().platform).toBe(newPlatform);
-    });
-
     it('should update region', () => {
-      const newRegion = REGIONS.EUROPE;
+      const newRegion = REGIONS.EUW1;
       samira.updateRegion(newRegion);
       expect(samira.getConfig().region).toBe(newRegion);
     });
@@ -57,8 +51,7 @@ describe('Samira', () => {
       const config = samira.getConfig();
       expect(config).toEqual({
         apiKey: mockApiKey,
-        platform: PLATFORMS.NA1,
-        region: REGIONS.AMERICAS,
+        region: REGIONS.NA1,
       });
 
       // Modifying returned config should not affect original
@@ -71,10 +64,11 @@ describe('Samira', () => {
     describe('getAvailablePlatforms', () => {
       it('should return all available platforms', () => {
         const platforms = Samira.getAvailablePlatforms();
-        expect(platforms).toHaveProperty('NA1', PLATFORMS.NA1);
-        expect(platforms).toHaveProperty('EUW1', PLATFORMS.EUW1);
-        expect(platforms).toHaveProperty('KR', PLATFORMS.KR);
-        expect(Object.keys(platforms).length).toBeGreaterThan(10);
+        expect(platforms).toHaveProperty('AMERICAS', PLATFORMS.AMERICAS);
+        expect(platforms).toHaveProperty('ASIA', PLATFORMS.ASIA);
+        expect(platforms).toHaveProperty('EUROPE', PLATFORMS.EUROPE);
+        expect(platforms).toHaveProperty('SEA', PLATFORMS.SEA);
+        expect(Object.keys(platforms).length).toBe(4);
       });
 
       it('should return a copy of platforms object', () => {
@@ -90,18 +84,17 @@ describe('Samira', () => {
     describe('getAvailableRegions', () => {
       it('should return all available regions', () => {
         const regions = Samira.getAvailableRegions();
-        expect(regions).toHaveProperty('AMERICAS', REGIONS.AMERICAS);
-        expect(regions).toHaveProperty('EUROPE', REGIONS.EUROPE);
-        expect(regions).toHaveProperty('ASIA', REGIONS.ASIA);
-        expect(regions).toHaveProperty('SEA', REGIONS.SEA);
+        expect(regions).toHaveProperty('NA1', REGIONS.NA1);
+        expect(regions).toHaveProperty('EUW1', REGIONS.EUW1);
+        expect(regions).toHaveProperty('KR', REGIONS.KR);
       });
     });
 
     describe('isValidPlatform', () => {
       it('should return true for valid platforms', () => {
-        expect(Samira.isValidPlatform(PLATFORMS.NA1)).toBe(true);
-        expect(Samira.isValidPlatform(PLATFORMS.EUW1)).toBe(true);
-        expect(Samira.isValidPlatform(PLATFORMS.KR)).toBe(true);
+        expect(Samira.isValidPlatform(PLATFORMS.AMERICAS)).toBe(true);
+        expect(Samira.isValidPlatform(PLATFORMS.EUROPE)).toBe(true);
+        expect(Samira.isValidPlatform(PLATFORMS.ASIA)).toBe(true);
       });
 
       it('should return false for invalid platforms', () => {
@@ -112,10 +105,9 @@ describe('Samira', () => {
 
     describe('isValidRegion', () => {
       it('should return true for valid regions', () => {
-        expect(Samira.isValidRegion(REGIONS.AMERICAS)).toBe(true);
-        expect(Samira.isValidRegion(REGIONS.EUROPE)).toBe(true);
-        expect(Samira.isValidRegion(REGIONS.ASIA)).toBe(true);
-        expect(Samira.isValidRegion(REGIONS.SEA)).toBe(true);
+        expect(Samira.isValidRegion(REGIONS.NA1)).toBe(true);
+        expect(Samira.isValidRegion(REGIONS.EUW1)).toBe(true);
+        expect(Samira.isValidRegion(REGIONS.KR)).toBe(true);
       });
 
       it('should return false for invalid regions', () => {
@@ -126,64 +118,10 @@ describe('Samira', () => {
 
     describe('getPlatformFromRegion', () => {
       it('should return correct platform for each region', () => {
-        expect(Samira.getPlatformFromRegion(REGIONS.AMERICAS)).toBe(PLATFORMS.NA1);
-        expect(Samira.getPlatformFromRegion(REGIONS.EUROPE)).toBe(PLATFORMS.EUW1);
-        expect(Samira.getPlatformFromRegion(REGIONS.ASIA)).toBe(PLATFORMS.KR);
-        expect(Samira.getPlatformFromRegion(REGIONS.SEA)).toBe(PLATFORMS.SG2);
+        expect(regionToPlatform(REGIONS.BR1)).toBe(PLATFORMS.AMERICAS);
+        expect(regionToPlatform(REGIONS.EUW1)).toBe(PLATFORMS.EUROPE);
+        expect(regionToPlatform(REGIONS.KR)).toBe(PLATFORMS.ASIA);
       });
-
-      it('should return default platform for unknown region', () => {
-        expect(Samira.getPlatformFromRegion('unknown-region')).toBe(PLATFORMS.NA1);
-      });
-    });
-
-    describe('getRegionFromPlatform', () => {
-      it('should return correct region for each platform', () => {
-        expect(Samira.getRegionFromPlatform(PLATFORMS.NA1)).toBe(REGIONS.AMERICAS);
-        expect(Samira.getRegionFromPlatform(PLATFORMS.EUW1)).toBe(REGIONS.EUROPE);
-        expect(Samira.getRegionFromPlatform(PLATFORMS.KR)).toBe(REGIONS.ASIA);
-        expect(Samira.getRegionFromPlatform(PLATFORMS.SG2)).toBe(REGIONS.SEA);
-      });
-
-      it('should return default region for unknown platform', () => {
-        expect(Samira.getRegionFromPlatform('unknown-platform')).toBe(REGIONS.AMERICAS);
-      });
-    });
-  });
-});
-
-describe('Factory Functions', () => {
-  const mockApiKey = process.env.RIOT_API_KEY || 'test-api-key-12345';
-
-  describe('createSamira', () => {
-    it('should create Samira instance with default config', () => {
-      const samira = createSamira(mockApiKey);
-      expect(samira).toBeInstanceOf(Samira);
-      expect(samira.getConfig().apiKey).toBe(mockApiKey);
-      expect(samira.getConfig().platform).toBe(PLATFORMS.NA1);
-      expect(samira.getConfig().region).toBe(REGIONS.AMERICAS);
-    });
-
-    it('should create Samira instance with custom platform and region', () => {
-      const samira = createSamira(mockApiKey, PLATFORMS.EUW1, REGIONS.EUROPE);
-      expect(samira.getConfig().platform).toBe(PLATFORMS.EUW1);
-      expect(samira.getConfig().region).toBe(REGIONS.EUROPE);
-    });
-  });
-
-  describe('createPlatformSamira', () => {
-    it('should create Samira instance for specific platform', () => {
-      const samira = createPlatformSamira(mockApiKey, PLATFORMS.KR);
-      expect(samira.getConfig().platform).toBe(PLATFORMS.KR);
-      expect(samira.getConfig().region).toBe(REGIONS.ASIA); // Should auto-detect region
-    });
-  });
-
-  describe('createRegionalSamira', () => {
-    it('should create Samira instance for specific region', () => {
-      const samira = createRegionalSamira(mockApiKey, REGIONS.EUROPE);
-      expect(samira.getConfig().region).toBe(REGIONS.EUROPE);
-      expect(samira.getConfig().platform).toBe(PLATFORMS.EUW1); // Should auto-detect platform
     });
   });
 });

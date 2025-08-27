@@ -1,10 +1,11 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 import { RateLimiter } from './rateLimiter';
 import { Either, left, right } from '../types/either';
+import { ENDPOINTS, type Platform, type Region } from '../constants';
 
 export interface HttpClientConfig {
   baseURL: string;
-  apiKey: string;
+  apiKey?: string;
   timeout?: number;
   retries?: number;
   retryDelay?: number;
@@ -266,7 +267,7 @@ export class HttpClient {
 /**
  * Create an HTTP client for a specific platform
  */
-export function createPlatformClient(platform: string, apiKey: string): HttpClient {
+export function createPlatformClient(platform: Platform, apiKey: string): HttpClient {
   return new HttpClient({
     baseURL: `https://${platform}.api.riotgames.com`,
     apiKey,
@@ -276,9 +277,15 @@ export function createPlatformClient(platform: string, apiKey: string): HttpClie
 /**
  * Create an HTTP client for regional routing
  */
-export function createRegionalClient(region: string, apiKey: string): HttpClient {
+export function createRegionalClient(region: Region, apiKey: string): HttpClient {
   return new HttpClient({
     baseURL: `https://${region}.api.riotgames.com`,
     apiKey,
+  });
+}
+
+export function createDataDragonClient(): HttpClient {
+  return new HttpClient({
+    baseURL: ENDPOINTS.DATA_DRAGON,
   });
 }

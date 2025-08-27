@@ -1,5 +1,5 @@
 // League of Legends API Regions
-export const REGIONS = {
+export const PLATFORMS = {
   AMERICAS: 'americas',
   ASIA: 'asia',
   EUROPE: 'europe',
@@ -7,7 +7,7 @@ export const REGIONS = {
 } as const;
 
 // Platform routing values
-export const PLATFORMS = {
+export const REGIONS = {
   BR1: 'br1',
   EUN1: 'eun1',
   EUW1: 'euw1',
@@ -71,6 +71,9 @@ export const ENDPOINTS = {
 
   // Status endpoints
   PLATFORM_STATUS: '/lol/status/v4/platform-data',
+
+  // Data dragon
+  DATA_DRAGON: 'https://ddragon.leagueoflegends.com',
 } as const;
 
 // Queue types

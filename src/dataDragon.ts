@@ -1,6 +1,6 @@
-import { HttpClient } from '../utils/httpClient';
-import { Either, left, right } from '../types/either';
-import { ApiError } from '../utils/httpClient';
+import { createDataDragonClient, HttpClient } from './utils/httpClient';
+import { Either, left, right } from './types/either';
+import { ApiError } from './utils/httpClient';
 import {
   DataDragonConfig,
   ItemAsset,
@@ -9,15 +9,16 @@ import {
   ItemAssetSchema,
   RuneAssetSchema,
   SummonerSpellAssetSchema,
-} from '../types';
+} from './types';
 import { z } from 'zod';
-import type { DataDragonCache } from '../types/dataDragon/cache';
-import { ChampionResumeSchema, type ChampionResume } from '../types/dataDragon/championResume';
+import type { DataDragonCache } from './types/dataDragon/cache';
+import { ChampionResumeSchema, type ChampionResume } from './types/dataDragon/championResume';
+import { ENDPOINTS } from './constants';
 
-export class DataDragonService {
+export class DataDragon {
   private client: HttpClient;
   private config: DataDragonConfig;
-  private baseUrl: string;
+  private baseUrl = ENDPOINTS.DATA_DRAGON;
   private version: string;
   private language: string;
   private isVersionFetched: boolean = false;
@@ -25,17 +26,11 @@ export class DataDragonService {
   private initialized: boolean = false;
   private cache: DataDragonCache;
 
-  constructor(client: HttpClient, config: DataDragonConfig = {}) {
-    this.client = client;
-    this.config = {
-      version: config.version || 'latest',
-      language: config.language || 'en_US',
-      baseUrl: config.baseUrl || 'https://ddragon.leagueoflegends.com',
-      includeFullUrl: config.includeFullUrl || false,
-    };
-
-    this.baseUrl = this.config.baseUrl!;
-    this.language = this.config.language!;
+  constructor(config: DataDragonConfig = {}) {
+    this.client = createDataDragonClient();
+    this.config = config;
+    this.config.includeFullUrl = this.config.includeFullUrl ? true : false;
+    this.language = this.config.language ?? 'en_US';
 
     if (this.config.version === 'latest') {
       this.version = 'latest';
@@ -57,6 +52,8 @@ export class DataDragonService {
    * This will fetch all the data and cache it
    */
   async init(): Promise<void> {
+    await this.fetchAndSetLatestVersion();
+
     if (!this.initialized) {
       const [championsResult, itemsResult, runesResult, spellsResult] = await Promise.all([
         this.getChampions(),
@@ -98,7 +95,6 @@ export class DataDragonService {
           if (latestVersion) {
             this.version = latestVersion;
             this.isVersionFetched = true;
-            console.log(`🔄 Data Dragon service using latest version: ${this.version}`);
           } else {
             throw new Error('No valid version found in versions array');
           }
@@ -136,6 +132,7 @@ export class DataDragonService {
   async getChampions(version?: string): Promise<Either<ApiError, Record<string, ChampionResume>>> {
     const ver = version || this.version;
     const url = `${this.baseUrl}/cdn/${ver}/data/${this.language}/champion.json`;
+
     const response = await this.client.get<{ data: Record<string, ChampionResume> }>(url);
 
     if (response.isLeft()) {
@@ -393,7 +390,6 @@ export class DataDragonService {
   updateConfig(config: Partial<DataDragonConfig>): void {
     const oldVersion = this.config.version;
     this.config = { ...this.config, ...config };
-    this.baseUrl = this.config.baseUrl || 'https://ddragon.leagueoflegends.com';
     this.language = this.config.language || 'en_US';
 
     // If version changed to 'latest', reset the fetched state

@@ -15,23 +15,29 @@ import {
 describe('Constants', () => {
   describe('REGIONS', () => {
     it('should have all required regions', () => {
-      expect(REGIONS).toHaveProperty('AMERICAS', 'americas');
-      expect(REGIONS).toHaveProperty('EUROPE', 'europe');
-      expect(REGIONS).toHaveProperty('ASIA', 'asia');
-      expect(REGIONS).toHaveProperty('SEA', 'sea');
+      expect(REGIONS).toHaveProperty('BR1', 'br1');
+      expect(REGIONS).toHaveProperty('EUN1', 'eun1');
+      expect(REGIONS).toHaveProperty('EUW1', 'euw1');
+      expect(REGIONS).toHaveProperty('JP1', 'jp1');
+      expect(REGIONS).toHaveProperty('KR', 'kr');
+      expect(REGIONS).toHaveProperty('LA1', 'la1');
+      expect(REGIONS).toHaveProperty('LA2', 'la2');
+      expect(REGIONS).toHaveProperty('NA1', 'na1');
+      expect(REGIONS).toHaveProperty('OC1', 'oc1');
+      expect(REGIONS).toHaveProperty('PH2', 'ph2');
     });
 
     it('should have correct number of regions', () => {
-      expect(Object.keys(REGIONS)).toHaveLength(4);
+      expect(Object.keys(REGIONS)).toHaveLength(16);
     });
   });
 
   describe('PLATFORMS', () => {
     it('should have major platforms', () => {
-      expect(PLATFORMS).toHaveProperty('NA1', 'na1');
-      expect(PLATFORMS).toHaveProperty('EUW1', 'euw1');
-      expect(PLATFORMS).toHaveProperty('KR', 'kr');
-      expect(PLATFORMS).toHaveProperty('BR1', 'br1');
+      expect(PLATFORMS).toHaveProperty('AMERICAS', 'americas');
+      expect(PLATFORMS).toHaveProperty('EUROPE', 'europe');
+      expect(PLATFORMS).toHaveProperty('ASIA', 'asia');
+      expect(PLATFORMS).toHaveProperty('SEA', 'sea');
     });
 
     it('should have correct platform URL format', () => {
@@ -41,7 +47,7 @@ describe('Constants', () => {
     });
 
     it('should have sufficient number of platforms', () => {
-      expect(Object.keys(PLATFORMS).length).toBeGreaterThan(15);
+      expect(Object.keys(PLATFORMS).length).toBe(4);
     });
   });
 

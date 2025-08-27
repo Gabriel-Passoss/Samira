@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeAll, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeAll, beforeEach } from 'vitest';
 import { Samira } from '../../src/samira';
-import { REGIONS, PLATFORMS } from '../../src/constants';
+import { REGIONS } from '../../src/constants';
 
 describe('Spectator Service E2E', () => {
   let samira: Samira;
@@ -11,23 +11,15 @@ describe('Spectator Service E2E', () => {
       console.warn('⚠️  RIOT_API_KEY not found, using test key for debugging');
     }
 
-    console.log('🔑 Using API key:', process.env.RIOT_API_KEY);
-
-    // Initialize Samira with regional routing for account endpoints
     samira = new Samira({
       apiKey: process.env.RIOT_API_KEY!,
-      region: REGIONS.AMERICAS,
-      platform: PLATFORMS.NA1,
+      region: REGIONS.NA1,
     });
-
-    console.log('🚀 Samira initialized with config:', samira.getConfig());
-
-    samira.usePlatformRouting();
   });
 
   // Rate limiting helper function
   const waitForRateLimit = async () => {
-    const status = samira.getHttpClient().getRateLimitStatus();
+    const status = samira.getRegionalClient().getRateLimitStatus();
 
     if (!status.canMakeRequest) {
       const delay = status.delayUntilNext;
@@ -119,32 +111,14 @@ describe('Spectator Service E2E', () => {
   });
 
   describe('Error handling', () => {
-    it('should handle network errors gracefully', async () => {
-      // Create a Samira instance with invalid base URL to simulate network error
-      const invalidSamira = new Samira({
-        apiKey: process.env.RIOT_API_KEY!,
-        platform: 'invalid-platform',
-      });
-
-      const result = await invalidSamira.account.getAccountByRiotId('Dave Mustaine', 'trash');
-
-      expect(result.isLeft()).toBe(true);
-      if (result.isLeft()) {
-        expect(result.value.message).toContain('No response received from server');
-      }
-    });
-
     it('should handle unauthorized access', async () => {
       // Create a Samira instance with invalid API key
       const invalidSamira = new Samira({
         apiKey: 'invalid-api-key',
-        region: 'americas',
+        region: REGIONS.KR,
       });
 
-      // Use regional routing for account endpoints
-      invalidSamira.useRegionalRouting();
-
-      const result = await invalidSamira.account.getAccountByRiotId('Faker', 'KR1');
+      const result = await invalidSamira.spectator.getFeaturedGames();
 
       expect(result.isLeft()).toBe(true);
       if (result.isLeft()) {

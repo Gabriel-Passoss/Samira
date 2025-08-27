@@ -22,17 +22,41 @@ npm install samira
 
 ## Quick Start
 
+### Using Samira (Main Library)
+
 ```typescript
 import { Samira } from 'samira';
 
 const samira = new Samira({
   apiKey: 'your-riot-api-key',
-  platform: 'na1',
-  region: 'americas',
+  region: 'na1',
 });
 
 // Get summoner information
 const summoner = await samira.summoner.getSummonerByPuuid('puuid-here');
+```
+
+### Using DataDragon (Game Assets)
+
+```typescript
+import { DataDragon } from 'samira';
+
+const dataDragon = new DataDragon({
+  version: 'latest',
+  language: 'en_US',
+  includeFullUrl: true,
+});
+
+// Initialize the service (fetches and caches all data)
+await dataDragon.init();
+
+// Get champion information
+const champions = await dataDragon.getChampions();
+const aatrox = dataDragon.getChampionResumeById(266);
+
+// Get asset URLs
+const championImage = dataDragon.getChampionImageUrl('Aatrox');
+const itemImage = dataDragon.getItemImageUrl('1001');
 ```
 
 ## Configuration
@@ -40,13 +64,7 @@ const summoner = await samira.summoner.getSummonerByPuuid('puuid-here');
 ```typescript
 const samira = new Samira({
   apiKey: 'your-riot-api-key',
-  platform: 'na1', // or 'euw1', 'kr', etc.
-  region: 'americas', // or 'europe', 'asia', 'sea'
-  dataDragon: {
-    version: 'latest', // or specific version like '13.1.1'
-    language: 'en_US', // or 'pt_BR', 'ko_KR', etc.
-    includeFullUrl: true, // return full URLs for assets
-  },
+  region: 'na1', // or 'euw1', 'kr', etc.
 });
 ```
 
@@ -352,39 +370,6 @@ npm test -- tests/services/summoner.spec.ts
 # Run with coverage
 npm run test:coverage
 ```
-
-## API Reference
-
-### Samira Class
-
-- `constructor(config: SamiraConfig)`
-- `getConfig(): SamiraConfig`
-- `getHttpClient(): HttpClient`
-- `updateApiKey(apiKey: string): void`
-- `updatePlatform(platform: string): void`
-- `updateRegion(region: string): void`
-- `useRegionalRouting(): void`
-- `usePlatformRouting(): void`
-
-### Data Dragon Service
-
-- `getLatestVersion(): Promise<Either<ApiError, string[]>>`
-- `getChampions(version?: string): Promise<Either<ApiError, Record<string, ChampionAsset>>>`
-- `getChampion(championId: string, version?: string): Promise<Either<ApiError, ChampionAsset>>`
-- `getItems(version?: string): Promise<Either<ApiError, Record<string, ItemAsset>>>`
-- `getItem(itemId: string, version?: string): Promise<Either<ApiError, ItemAsset>>`
-- `getRunes(version?: string): Promise<Either<ApiError, RuneAsset[]>>`
-- `getSummonerSpells(version?: string): Promise<Either<ApiError, Record<string, SummonerSpellAsset>>>`
-- `getAssetUrl(assetPath: string): string`
-- `getChampionImageUrl(championId: string, skinId?: string): string`
-- `getItemImageUrl(itemId: string): string`
-- `getProfileIconUrl(iconId: number): string`
-- `getChampionSplashUrl(championId: string, skinId?: string): string`
-- `getChampionLoadingUrl(championId: string, skinId?: string): string`
-- `getRuneImageUrl(runeId: number): string`
-- `getSummonerSpellImageUrl(spellId: string): string`
-- `updateConfig(config: Partial<DataDragonConfig>): void`
-- `getConfig(): DataDragonConfig`
 
 ## Contributing
 
