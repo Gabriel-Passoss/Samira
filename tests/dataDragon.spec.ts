@@ -1,16 +1,10 @@
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { DataDragon } from '../src/dataDragon';
 
 describe('Data Dragon Service E2E', () => {
   let dataDragon: DataDragon;
 
-  beforeAll(async () => {
-    // Check if API key is available
-    if (!process.env.RIOT_API_KEY) {
-      console.warn('⚠️  RIOT_API_KEY not found, using test key for debugging');
-    }
-
-    // Initialize Samira with Data Dragon configuration
+  beforeEach(async () => {
     dataDragon = new DataDragon();
 
     await dataDragon.init();
@@ -176,18 +170,20 @@ describe('Data Dragon Service E2E', () => {
   });
 
   describe('asset URL methods', () => {
-    it('should return full URLs when includeFullUrl is true', () => {
-      dataDragon.updateConfig({ includeFullUrl: true });
+    it('should return full URLs when includeFullUrl is true', async () => {
+      dataDragon.updateConfig({ includeFullUrl: true, version: '15.15.1' });
       const config = dataDragon.getConfig();
 
       expect(config.includeFullUrl).toBe(true);
 
-      const championImageUrl = dataDragon.getChampionImageUrl('Aatrox');
+      const championImageUrl = dataDragon.getChampionImageUrl(266);
+
       expect(championImageUrl).toMatch(
         /^https:\/\/ddragon\.leagueoflegends\.com\/cdn\/.*\/img\/champion\/Aatrox\.png$/,
       );
 
       const itemImageUrl = dataDragon.getItemImageUrl('1001');
+
       expect(itemImageUrl).toMatch(
         /^https:\/\/ddragon\.leagueoflegends\.com\/cdn\/.*\/img\/item\/1001\.png$/,
       );
@@ -196,33 +192,20 @@ describe('Data Dragon Service E2E', () => {
       expect(profileIconUrl).toMatch(
         /^https:\/\/ddragon\.leagueoflegends\.com\/cdn\/.*\/img\/profileicon\/1\.png$/,
       );
-    });
 
-    it('should handle champion skins correctly', () => {
-      const baseImageUrl = dataDragon.getChampionImageUrl('Aatrox');
-      const skinImageUrl = dataDragon.getChampionImageUrl('Aatrox', '1');
-
-      expect(baseImageUrl).not.toBe(skinImageUrl);
-      expect(skinImageUrl).toContain('Aatrox_1.png');
-    });
-
-    it('should handle champion splash art correctly', () => {
-      const splashUrl = dataDragon.getChampionSplashUrl('Aatrox');
-      expect(splashUrl).toContain('img/champion/splash/Aatrox.png');
-
-      const skinSplashUrl = dataDragon.getChampionSplashUrl('Aatrox', '1');
-      expect(skinSplashUrl).toContain('img/champion/splash/Aatrox_1.png');
-    });
-
-    it('should handle champion splash art correctly', () => {
-      const loadingUrl = dataDragon.getChampionLoadingUrl('Aatrox');
-      expect(loadingUrl).toContain(
-        'https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Aatrox_0.jpg',
+      const summonerSpellImageUrl = dataDragon.getSummonerSpellImageUrl(4);
+      expect(summonerSpellImageUrl).toMatch(
+        /^https:\/\/ddragon\.leagueoflegends\.com\/cdn\/.*\/img\/spell\/SummonerFlash\.png$/,
       );
 
-      const skinLoadingUrl = dataDragon.getChampionLoadingUrl('Aatrox', '1');
-      expect(skinLoadingUrl).toContain(
-        'https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Aatrox_1.jpg',
+      const runeTreeImageUrl = dataDragon.getRuneTreeImageUrl(8100);
+      expect(runeTreeImageUrl).toMatch(
+        /^https:\/\/ddragon\.leagueoflegends\.com\/cdn\/img\/perk-images\/Styles\/7200_Domination\.png$/,
+      );
+
+      const runeImageUrl = dataDragon.getRuneImageUrl(8100, 8112);
+      expect(runeImageUrl).toMatch(
+        /^https:\/\/ddragon\.leagueoflegends\.com\/cdn\/img\/perk-images\/Styles\/Domination\/Electrocute\/Electrocute\.png$/,
       );
     });
   });
@@ -241,7 +224,7 @@ describe('Data Dragon Service E2E', () => {
       expect(updatedConfig.includeFullUrl).toBe(false);
       expect(updatedConfig.version).toBe(originalConfig.version);
 
-      const championImageUrl = dataDragon.getChampionImageUrl('Aatrox');
+      const championImageUrl = dataDragon.getChampionImageUrl(266);
       expect(championImageUrl).toBe('img/champion/Aatrox.png');
 
       dataDragon.updateConfig(originalConfig);

@@ -296,7 +296,7 @@ export class DataDragon {
     }
 
     for (const key in this.cache.summonerSpells) {
-      if (this.cache.summonerSpells[key]!.id === spellId.toString()) {
+      if (this.cache.summonerSpells[key]!.key === spellId.toString()) {
         return this.cache.summonerSpells[key]! as SummonerSpellAsset;
       }
     }
@@ -317,10 +317,10 @@ export class DataDragon {
   /**
    * Get champion image URL
    */
-  getChampionImageUrl(championId: string, skinId?: string): string {
-    const imagePath = skinId
-      ? `img/champion/${championId}${skinId === '0' ? '' : `_${skinId}`}.png`
-      : `img/champion/${championId}.png`;
+  getChampionImageUrl(championId: number): string {
+    const championName = this.getChampionResumeById(championId).name;
+
+    const imagePath = `img/champion/${championName}.png`;
 
     return this.getAssetUrl(imagePath);
   }
@@ -336,21 +336,30 @@ export class DataDragon {
   /**
    * Get rune image URL
    */
-  getRuneImageUrl(runeTree: string, runeId: number): string {
-    const imagePath = `img/perk-images/Styles/${runeTree}/${runeId}.png`;
-    return this.getAssetUrl(imagePath);
+  getRuneImageUrl(runeTree: number, runeId: number): string {
+    const runeTreeData = this.getRuneTreeById(runeTree);
+    const rune = runeTreeData.slots[0]!.runes.find((rune) => rune.id === runeId);
+
+    if (!rune) {
+      throw new Error(`Rune with id ${runeId} not found in rune tree ${runeTree}`);
+    }
+
+    return `${this.baseUrl}/cdn/img/${rune.icon}`;
   }
 
-  getRuneTreeImageUrl(runeTree: string): string {
-    const imagePath = `img/perk-images/Styles/${runeTree}.png`;
-    return this.getAssetUrl(imagePath);
+  getRuneTreeImageUrl(runeTree: number): string {
+    const runeTreeIcon = this.getRuneTreeById(runeTree).icon;
+
+    return `${this.baseUrl}/cdn/img/${runeTreeIcon}`;
   }
 
   /**
    * Get summoner spell image URL
    */
-  getSummonerSpellImageUrl(spellId: string): string {
-    const imagePath = `img/spell/${spellId}.png`;
+  getSummonerSpellImageUrl(spellId: number): string {
+    const spellName = this.getSummonerSpellById(spellId).id;
+
+    const imagePath = `img/spell/${spellName}.png`;
     return this.getAssetUrl(imagePath);
   }
 
@@ -360,28 +369,6 @@ export class DataDragon {
   getProfileIconUrl(iconId: number): string {
     const imagePath = `img/profileicon/${iconId}.png`;
     return this.getAssetUrl(imagePath);
-  }
-
-  /**
-   * Get champion splash art URL
-   */
-  getChampionSplashUrl(championId: string, skinId?: string): string {
-    const imagePath = skinId
-      ? `img/champion/splash/${championId}${skinId === '0' ? '_0' : `_${skinId}`}.png`
-      : `img/champion/splash/${championId}.png`;
-
-    return this.getAssetUrl(imagePath);
-  }
-
-  /**
-   * Get champion loading screen URL
-   */
-  getChampionLoadingUrl(championId: string, skinId?: string): string {
-    const imageUrl = skinId
-      ? `https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${championId}${skinId === '0' && skinId !== undefined ? '_0' : `_${skinId}`}.jpg`
-      : `https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${championId}_0.jpg`;
-
-    return imageUrl;
   }
 
   /**
