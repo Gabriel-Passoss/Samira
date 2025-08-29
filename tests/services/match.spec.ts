@@ -70,8 +70,9 @@ describe('Match Service E2E', () => {
 
   describe('getMatchesByPuuid', () => {
     it('should fetch matches by puuid successfully', async () => {
-      const puuid = 'ZrXebR0htvpXhiz8D75UGNtYhcCNRqXIAO4kGieSfwJbihV1PKTjTd2sP1CsgqClaL-vw812L7h7iQ';
-      const matchesIds = await samira.match.getMatchHistoryByPUUID(puuid, {count: 10});
+      const puuid =
+        'ZrXebR0htvpXhiz8D75UGNtYhcCNRqXIAO4kGieSfwJbihV1PKTjTd2sP1CsgqClaL-vw812L7h7iQ';
+      const matchesIds = await samira.match.getMatchHistoryByPUUID(puuid, { count: 10 });
 
       if (matchesIds.isRight()) {
         const result = await samira.match.getMatchesByIds(matchesIds.value);
