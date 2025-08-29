@@ -324,9 +324,9 @@ export const MatchParticipantSchema = z.object({
   wardsKilled: z.number(),
   wardsPlaced: z.number(),
   win: z.boolean(),
-  challenges: ChallengeSchema.nullable(),
-  missions: MissionSchema.nullable(),
-  perks: MatchPerksSchema.nullable(),
+  challenges: ChallengeSchema.optional(),
+  missions: MissionSchema.optional(),
+  perks: MatchPerksSchema.optional(),
 });
 
 export type MatchParticipant = z.infer<typeof MatchParticipantSchema>;

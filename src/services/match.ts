@@ -115,7 +115,7 @@ export class MatchService {
       if (result.isRight()) {
         matches.push(result.value);
       } else {
-        errors.push({ id: 'unknown', error: result.value });
+        errors.push({ id: 'unknown', error: result.value.details });
       }
     });
 

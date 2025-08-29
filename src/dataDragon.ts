@@ -318,9 +318,9 @@ export class DataDragon {
    * Get champion image URL
    */
   getChampionImageUrl(championId: number): string {
-    const championName = this.getChampionResumeById(championId).name;
+    const championName = this.getChampionResumeById(championId).image.full;
 
-    const imagePath = `img/champion/${championName}.png`;
+    const imagePath = `img/champion/${championName}`;
 
     return this.getAssetUrl(imagePath);
   }

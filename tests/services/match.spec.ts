@@ -68,6 +68,36 @@ describe('Match Service E2E', () => {
     });
   });
 
+  describe('getMatchesByPuuid', () => {
+    it('should fetch matches by puuid successfully', async () => {
+      const puuid = 'ZrXebR0htvpXhiz8D75UGNtYhcCNRqXIAO4kGieSfwJbihV1PKTjTd2sP1CsgqClaL-vw812L7h7iQ';
+      const matchesIds = await samira.match.getMatchHistoryByPUUID(puuid, {count: 10});
+
+      if (matchesIds.isRight()) {
+        const result = await samira.match.getMatchesByIds(matchesIds.value);
+
+        if (result.isRight()) {
+          const matches = result.value as any;
+          expect(matches).toBeDefined();
+          expect(matches.length).toBeGreaterThan(0);
+        }
+
+        expect(result.isRight()).toBe(true);
+      }
+    }, 100000);
+
+    it('should handle invalid puuid gracefully', async () => {
+      const puuid = 'invalid-puuid';
+      const result = await samira.match.getMatchHistoryByPUUID(puuid);
+
+      expect(result.isLeft()).toBe(true);
+      if (result.isLeft()) {
+        expect(result.value.status).toBe(400);
+        expect(result.value.message).toContain('Bad Request - Exception decrypting invalid-puuid');
+      }
+    });
+  });
+
   describe('API response validation', () => {
     it('should return properly formatted account data', async () => {
       const gameName = 'Dave Mustaine';
